@@ -1,16 +1,12 @@
 import ProjectDescription
 
-public extension InfoPlist {
-    static let mainApplication: InfoPlist = .dictionary(applicationDefault)
-}
-
 extension InfoPlist {
     public typealias InfoPlistDictionary = [String: ProjectDescription.Plist.Value]
     public static func createApplicationPlist(with: InfoPlistDictionary) -> InfoPlist {
-        let merged = applicationDefault.merging(with) { _, rhs in rhs }
-        return .dictionary(merged)
+        let merged = applicationDefaultPlist.merging(with) { _, rhs in rhs }
+        return .extendingDefault(with: merged)
     }
-    private static let applicationDefault: InfoPlistDictionary = [
+    private static let applicationDefaultPlist: InfoPlistDictionary = [
         "NSAppTransportSecurity" : [
             "NSAllowsArbitraryLoads" : true
         ],
@@ -21,6 +17,7 @@ extension InfoPlist {
                 "UIWindowSceneSessionRoleApplication": [
                     [
                         "UISceneConfigurationName": "Default Configuration",
+                        "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate",
                     ]
                 ]
             ]

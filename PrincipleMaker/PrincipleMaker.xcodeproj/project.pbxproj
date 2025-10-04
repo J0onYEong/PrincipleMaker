@@ -3,8 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 55;
 	objects = {
+
+/* Begin PBXBuildFile section */
+		649B482433FC61843AA94CCA /* TuistBundle+PrincipleMaker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D2E88589BD9A83E9F94D8F3 /* TuistBundle+PrincipleMaker.swift */; };
+/* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		20113B7B77C54C9CB506257C /* Embed Frameworks */ = {
@@ -21,12 +25,29 @@
 
 /* Begin PBXFileReference section */
 		4097F5DAA6AA1302F28763D9 /* PrincipleMaker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PrincipleMaker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7D2E88589BD9A83E9F94D8F3 /* TuistBundle+PrincipleMaker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TuistBundle+PrincipleMaker.swift"; sourceTree = "<group>"; };
 		B6546066C163C7C39FAD9DEB /* PrincipleMaker-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "PrincipleMaker-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		642780F8D53BE0DD5A3D9A6B /* Resources */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Resources; sourceTree = "<group>"; };
-		E9D0648884F1988789942A40 /* Sources */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Sources; sourceTree = "<group>"; };
+		642780F8D53BE0DD5A3D9A6B /* Resources */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		E9D0648884F1988789942A40 /* Sources */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				1F4A0F0B3FDCB9C46026D0B7 /* InfoPlists */,
+				74A3A2B9F12D32506DCDFEAC /* Sources */,
 			);
 			path = Derived;
 			sourceTree = "<group>";
@@ -70,6 +92,14 @@
 				DECA234CA6B20A17F77E157D /* Project */,
 				37D255DE5785D964ED9F590F /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		74A3A2B9F12D32506DCDFEAC /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				7D2E88589BD9A83E9F94D8F3 /* TuistBundle+PrincipleMaker.swift */,
+			);
+			path = Sources;
 			sourceTree = "<group>";
 		};
 		DECA234CA6B20A17F77E157D /* Project */ = {
@@ -99,8 +129,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				642780F8D53BE0DD5A3D9A6B /* Resources */,
 				E9D0648884F1988789942A40 /* Sources */,
+				642780F8D53BE0DD5A3D9A6B /* Resources */,
 			);
 			name = PrincipleMaker;
 			packageProductDependencies = (
@@ -116,6 +146,8 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = 19326385A42ED3E5A1BEC5F4 /* Build configuration list for PBXProject "PrincipleMaker" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -150,6 +182,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				649B482433FC61843AA94CCA /* TuistBundle+PrincipleMaker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,7 +210,7 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 6.0;
+				SWIFT_VERSION = 6.2.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -313,10 +346,13 @@
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
+					"$(inherited)",
+					DEBUG,
+				);
 				SWIFT_COMPILATION_MODE = singlefile;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 6.0;
+				SWIFT_VERSION = 6.2.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
