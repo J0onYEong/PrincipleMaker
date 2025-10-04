@@ -1,0 +1,15 @@
+{
+  "originHash" : "4d19e57752ccfbcc152953a3a4ec679afbd3e84a42459f730af070182f337b36",
+  "pins" : [
+    {
+      "identity" : "then",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/devxoul/Then.git",
+      "state" : {
+        "revision" : "d41ef523faef0f911369f79c0b96815d9dbb6d7a",
+        "version" : "3.0.0"
+      }
+    }
+  ],
+  "version" : 3
+}

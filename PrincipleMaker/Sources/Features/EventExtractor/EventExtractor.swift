@@ -7,17 +7,30 @@
 
 import FoundationModels
 
-final class EventExtractor {
+final class EventExtractor: @unchecked Sendable {
     
     private var session: LanguageModelSession?
     
     init() {}
     
     func isModelAvailable() -> Bool {
-        SystemLanguageModel.default.isAvailable
+        let defaultModel = SystemLanguageModel.default
+        switch defaultModel.availability {
+        case .available:
+            print("Show your intelligence UI.")
+        case .unavailable(.deviceNotEligible):
+            print("Show an alternative UI.")
+        case .unavailable(.appleIntelligenceNotEnabled):
+            print("Ask the person to turn on Apple Intelligence.")
+        case .unavailable(.modelNotReady):
+            print("The model isn't ready because it's downloading or because of other system reasons.")
+        case .unavailable(let other):
+            print("The model is unavailable for an unknown reason. \(other)")
+        }
+        return defaultModel.isAvailable
     }
     
-    func initializeModel() throws {
+    func initializeModel() {
         let sessionInstructions = """
             Extract events from the given paragraph.\
             An event refers to a specific occurrence that can be expressed as a sentence of 30 characters or fewer.\
@@ -26,7 +39,8 @@ final class EventExtractor {
             The order of events must follow their appearance in the paragraph.\
             Output the events as a list.\
             Do not include unnecessary explanations, interpretations, or contextual summaries.
-            If no events are found, output an empty list.
+            If no events are found, output an empty list.\
+            including your final requirement that each event must end with “다.” — ensuring grammatically complete Korean sentences.
         """
         let modelSession = LanguageModelSession(
             model: .default,

@@ -15,7 +15,9 @@ let project = Project(
                 "Sources",
                 "Resources",
             ],
-            dependencies: [],
+            dependencies: [
+            
+            ],
             settings: .settings(
                 base: [
                     "SWIFT_VERSION": "\(ProjectEnvironment.swiftVersion)"
