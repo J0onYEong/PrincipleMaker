@@ -5,6 +5,7 @@
 //  Created by choijunios on 10/4/25.
 //
 
+import Foundation
 import FoundationModels
 
 final class EventExtractor: @unchecked Sendable {
@@ -31,17 +32,10 @@ final class EventExtractor: @unchecked Sendable {
     }
     
     func initializeModel() {
-        let sessionInstructions = """
-            Extract events from the given paragraph.\
-            An event refers to a specific occurrence that can be expressed as a sentence of 30 characters or fewer.\
-            Each event must include a clear actor (subject) and an action (verb).\
-            Extract only events that have a temporal flow; exclude mere states, descriptions, or emotions.\
-            The order of events must follow their appearance in the paragraph.\
-            Output the events as a list.\
-            Do not include unnecessary explanations, interpretations, or contextual summaries.
-            If no events are found, output an empty list.\
-            including your final requirement that each event must end with “다.” — ensuring grammatically complete Korean sentences.
-        """
+        guard let filePath = Bundle.main.path(forResource: "EventExtractionInst", ofType: "txt")
+        else { preconditionFailure("인스트럭션 파일을 찾을 수 없습니다.") }
+        let fileURL = URL(fileURLWithPath: filePath)
+        let sessionInstructions = try? String(contentsOf: fileURL, encoding: .utf8)
         let modelSession = LanguageModelSession(
             model: .default,
             tools: [],

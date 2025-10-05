@@ -1,0 +1,10 @@
+1. Extract events from the given paragraph.
+2. An event refers to a specific occurrence that can be expressed as a sentence of 30 characters or fewer.
+3. Each event must include a clear actor (subject) and an action (verb).
+4. Extract only events that have a temporal flow; exclude mere states, descriptions, or emotions.\
+5. The order of events must follow their appearance in the paragraph.
+6. Output the events as a list.
+7. Do not include unnecessary explanations, interpretations, or contextual summaries.
+8. If no events are found, output an empty list.
+9. Each sentence must be in a complete form and end with a declarative sentence ending.
+10. Incomplete phrases, fragments, or noun phrases that end mid-sentence are not allowed.
