@@ -16,7 +16,8 @@ let project = Project(
                 "Resources",
             ],
             dependencies: [
-            
+                .external(name: "CombineCocoa"),
+                .external(name: "SnapKit"),
             ],
             settings: .settings(
                 base: [

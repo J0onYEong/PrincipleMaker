@@ -13,7 +13,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = window
         
         window.rootViewController = UINavigationController(
-            rootViewController: ViewController()
+            rootViewController: UserStoryInputViewController()
         )
         window.makeKeyAndVisible()
     }

@@ -1,13 +1,22 @@
 {
-  "originHash" : "4d19e57752ccfbcc152953a3a4ec679afbd3e84a42459f730af070182f337b36",
+  "originHash" : "e56259c7cc8db2dd3a4c6f297d353d34a3b1b5fd2217c314e34bc8ec2bd70308",
   "pins" : [
     {
-      "identity" : "then",
+      "identity" : "combinecocoa",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/devxoul/Then.git",
+      "location" : "https://github.com/CombineCommunity/CombineCocoa.git",
       "state" : {
-        "revision" : "d41ef523faef0f911369f79c0b96815d9dbb6d7a",
-        "version" : "3.0.0"
+        "revision" : "7300c75ff9e072aa7fd0fccefcc88f74aae9bf56",
+        "version" : "0.4.1"
+      }
+    },
+    {
+      "identity" : "snapkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SnapKit/SnapKit.git",
+      "state" : {
+        "revision" : "2842e6e84e82eb9a8dac0100ca90d9444b0307f4",
+        "version" : "5.7.1"
       }
     }
   ],
