@@ -12,8 +12,15 @@ import UIKit
 import SwiftUI
 
 final class UserStoryTextField: UIView {
+    private enum Config {
+        static let minimunTextViewHeight: CGFloat = 30
+        static let maximumTextViewHeight: CGFloat = 120
+        static let contentVerticalInset: CGFloat = 10
+        static let contentHorizontalInset: CGFloat = 20
+    }
+    
     private let visualEffectView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
-    private let containerStackView: UIStackView = UIStackView()
+    private let contentView: UIView = UIView()
     private let textView: PlaceholderTextView = PlaceholderTextView()
     private let submitButton: UIButton = UIButton()
     
@@ -23,13 +30,6 @@ final class UserStoryTextField: UIView {
         super.init(frame: .zero)
         attribute()
         layout()
-        
-        submitButton.tapPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
-                self?.resignFirstResponder()
-            }
-            .store(in: &cancellables)
     }
     required init?(coder: NSCoder) { nil }
     
@@ -37,25 +37,18 @@ final class UserStoryTextField: UIView {
         textView.resignFirstResponder()
     }
     
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        visualEffectView.layer.cornerRadius = visualEffectView.bounds.height / 2
-    }
-    
     private func attribute() {
         addSubview(visualEffectView)
         
-        containerStackView.axis = .horizontal
-        containerStackView.spacing = 10
-        containerStackView.distribution = .fill
-        visualEffectView.contentView.addSubview(containerStackView)
+        visualEffectView.contentView.addSubview(contentView)
+        visualEffectView.layer.cornerRadius = (Config.minimunTextViewHeight + Config.contentVerticalInset) / 2
         
         textView.placeholder = "이야기를 알려주세요!"
-        containerStackView.addArrangedSubview(textView)
+        contentView.addSubview(textView)
         
         submitButton.configuration = .glass()
         submitButton.configuration?.image = UIImage(systemName: "arrow.up.message.fill")
-        containerStackView.addArrangedSubview(submitButton)
+        contentView.addSubview(submitButton)
     }
     
     private func layout() {
@@ -63,14 +56,25 @@ final class UserStoryTextField: UIView {
             make.edges.equalToSuperview()
         }
         
-        containerStackView.snp.makeConstraints { make in
-            make.horizontalEdges.equalTo(visualEffectView.contentView).inset(20)
-            make.verticalEdges.equalTo(visualEffectView.contentView).inset(10)
+        contentView.snp.makeConstraints { make in
+            make.verticalEdges.equalToSuperview().inset(Config.contentVerticalInset)
+            make.horizontalEdges.equalToSuperview().inset(Config.contentHorizontalInset)
+        }
+        
+        textView.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.left.equalToSuperview()
+            make.bottom.equalToSuperview()
+            make.right.equalTo(submitButton.snp.left).offset(-10)
+            make.height.greaterThanOrEqualTo(Config.minimunTextViewHeight)
+            make.height.lessThanOrEqualTo(Config.maximumTextViewHeight)
         }
         
         submitButton.snp.makeConstraints { make in
             make.width.equalTo(50)
             make.height.equalTo(30)
+            make.right.equalToSuperview()
+            make.centerY.equalToSuperview()
         }
     }
 }
