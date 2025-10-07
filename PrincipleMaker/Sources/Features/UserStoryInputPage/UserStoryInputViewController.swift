@@ -11,7 +11,7 @@ import SwiftUI
 
 final class UserStoryInputViewController: UIViewController {
     private let contentView: UIView = UIView()
-    private let textField: UserStoryTextField = UserStoryTextField()
+    private let userStoryTextField: UserStoryTextField = UserStoryTextField()
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -33,7 +33,7 @@ final class UserStoryInputViewController: UIViewController {
     private func attribute() {
         view.addSubview(contentView)
         
-        contentView.addSubview(textField)
+        contentView.addSubview(userStoryTextField)
     }
     
     private func layout() {
@@ -41,9 +41,9 @@ final class UserStoryInputViewController: UIViewController {
             make.edges.equalTo(view.safeAreaLayoutGuide)
         }
         
-        textField.snp.makeConstraints { make in
+        userStoryTextField.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(10)
-            make.bottom.equalToSuperview()
+            make.bottom.equalToSuperview().inset(10)
         }
     }
     
