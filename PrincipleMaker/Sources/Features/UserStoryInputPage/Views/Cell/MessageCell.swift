@@ -36,7 +36,12 @@ final class MessageCell: UITableViewCell, Reusable {
     }
     
     private func attribute() {
+        self.backgroundColor = .clear
+        
+        contentView.backgroundColor = .clear
+        
         hostImageView.image = UIImage(systemName: "person.circle")
+        hostImageView.contentMode = .scaleAspectFit
         hostImageView.tintColor = .systemGreen
         hostImageView.layer.cornerRadius = 10
         contentView.addSubview(hostImageView)

@@ -81,7 +81,6 @@ final class UserStoryInputViewController: BaseViewController {
     override func attribute() {
         self.navigationItem.title = "오늘의 기록"
         
-        view.backgroundColor = .white
         view.addSubview(contentView)
         view.addGestureRecognizer(dismissKeyboardTapRecognizer)
         
@@ -103,8 +102,8 @@ final class UserStoryInputViewController: BaseViewController {
         }
         
         messageTableView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide)
-            make.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
             make.bottom.equalTo(userStoryTextField.snp.top).offset(-5)
         }
         

@@ -85,7 +85,13 @@ extension UserStoryInputViewModel {
         
         Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-            let nextMessage = try await userStoryDialogProvider.requestDialog(reply: reply)
+            let nextMessage: String
+            do {
+                let message = try await userStoryDialogProvider.requestDialog(reply: reply)
+                nextMessage = message
+            } catch {
+                nextMessage = "오류가 발생했습니다.\n\(error.localizedDescription)"
+            }
             await MainActor.run { [weak self] in
                 guard
                     let self,
