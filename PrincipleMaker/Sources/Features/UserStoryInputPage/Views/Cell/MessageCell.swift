@@ -5,10 +5,11 @@
 //  Created by choijunios on 10/7/25.
 //
 
+import Reusable
 import SnapKit
 import UIKit
 
-final class MessageCell: UITableViewCell {
+final class MessageCell: UITableViewCell, Reusable {
     private enum Config {
         static let messageLabelInset: CGFloat = 10
         static let messageContainerMinWidth: CGFloat = 50
@@ -31,33 +32,36 @@ final class MessageCell: UITableViewCell {
     
     override func prepareForReuse() {
         stopLoadingAnimation()
+        messageLabel.text = nil
     }
     
     private func attribute() {
         hostImageView.image = UIImage(systemName: "person.circle")
         hostImageView.tintColor = .systemGreen
         hostImageView.layer.cornerRadius = 10
+        contentView.addSubview(hostImageView)
         
         messageContainer.layer.cornerRadius = 10
         messageContainer.backgroundColor = .lightGray
+        contentView.addSubview(messageContainer)
         
         messageLabel.font = .systemFont(ofSize: 17)
         messageLabel.textColor = .black
         messageLabel.numberOfLines = 0
+        messageContainer.addSubview(messageLabel)
         
         loadingImage.image = UIImage(systemName: "hourglass")
         loadingImage.tintColor = .white
+        messageContainer.addSubview(loadingImage)
     }
     
     private func layout() {
-        contentView.addSubview(hostImageView)
         hostImageView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.left.equalToSuperview()
             make.width.height.equalTo(30)
         }
         
-        contentView.addSubview(messageContainer)
         messageContainer.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(15)
             make.left.equalTo(hostImageView.snp.right).offset(3)
@@ -67,13 +71,11 @@ final class MessageCell: UITableViewCell {
             make.width.greaterThanOrEqualTo(Config.messageContainerMinWidth)
         }
         
-        messageContainer.addSubview(messageLabel)
         messageLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(Config.messageLabelInset)
             make.verticalEdges.equalToSuperview().inset(Config.messageLabelInset)
         }
         
-        messageContainer.addSubview(loadingImage)
         loadingImage.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.height.equalTo(15)
@@ -106,13 +108,16 @@ final class MessageCell: UITableViewCell {
     private func updateLayout(for direction: MessageDirection) {
         switch direction {
         case .left:
-            hostImageView.snp.remakeConstraints { make in
+            hostImageView.snp.removeConstraints()
+            messageContainer.snp.removeConstraints()
+            
+            hostImageView.snp.makeConstraints { make in
                 make.top.equalToSuperview()
                 make.left.equalToSuperview()
                 make.width.height.equalTo(30)
             }
 
-            messageContainer.snp.remakeConstraints { make in
+            messageContainer.snp.makeConstraints { make in
                 make.top.equalToSuperview().inset(15)
                 make.left.equalTo(hostImageView.snp.right).offset(3)
                 make.right.lessThanOrEqualToSuperview().inset(20)
@@ -120,13 +125,16 @@ final class MessageCell: UITableViewCell {
                 make.width.greaterThanOrEqualTo(Config.messageContainerMinWidth)
             }
         case .right:
-            hostImageView.snp.remakeConstraints { make in
+            hostImageView.snp.removeConstraints()
+            messageContainer.snp.removeConstraints()
+            
+            hostImageView.snp.makeConstraints { make in
                 make.top.equalToSuperview()
                 make.right.equalToSuperview()
                 make.width.height.equalTo(30)
             }
 
-            messageContainer.snp.remakeConstraints { make in
+            messageContainer.snp.makeConstraints { make in
                 make.top.equalToSuperview().inset(15)
                 make.right.equalTo(hostImageView.snp.left).offset(-3)
                 make.left.greaterThanOrEqualToSuperview().inset(20)

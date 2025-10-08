@@ -12,8 +12,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
+        let viewController = UserStoryInputViewController()
+        viewController.bind(viewModel: UserStoryInputViewModel())
+        
         window.rootViewController = UINavigationController(
-            rootViewController: UserStoryInputViewController()
+            rootViewController: viewController
         )
         window.makeKeyAndVisible()
     }

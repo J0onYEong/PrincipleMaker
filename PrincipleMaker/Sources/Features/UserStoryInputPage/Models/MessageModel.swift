@@ -5,16 +5,19 @@
 //  Created by choijunios on 10/8/25.
 //
 
-enum MessageDirection {
+import Foundation
+
+enum MessageDirection: Hashable {
     case left, right
 }
 
-enum MessageMode {
+enum MessageMode: Hashable {
     case message(String)
     case typing
 }
 
-struct MessageModel {
+struct MessageModel: Identifiable, Hashable {
+    let id: String = UUID().uuidString
     let direction: MessageDirection
     let mode: MessageMode
 }

@@ -8,7 +8,7 @@
 import UIKit
 
 final class PlaceholderTextView: UITextView, UITextViewDelegate {
-    let placeholderLabel = UILabel()
+    private let placeholderLabel = UILabel()
     
     var placeholder: String? {
         didSet { placeholderLabel.text = placeholder }

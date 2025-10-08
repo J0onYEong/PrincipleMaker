@@ -19,22 +19,48 @@ final class UserStoryTextField: UIView {
         static let contentHorizontalInset: CGFloat = 20
     }
     
+    enum ViewAction {
+        case textInputChanged(message: String)
+        case submitButtonTapped
+    }
+    
+    let viewActionPublisher: PassthroughSubject<ViewAction, Never> = .init()
+    
     private let visualEffectView = UIVisualEffectView(effect: UIGlassEffect(style: .regular))
     private let contentView: UIView = UIView()
     private let textView: PlaceholderTextView = PlaceholderTextView()
     private let submitButton: UIButton = UIButton()
     
-    var cancellables: Set<AnyCancellable> = []
+    private var store: Set<AnyCancellable> = []
     
     init() {
         super.init(frame: .zero)
         attribute()
         layout()
+        bindInputs()
     }
     required init?(coder: NSCoder) { nil }
     
     override func resignFirstResponder() -> Bool {
         textView.resignFirstResponder()
+    }
+    
+    private func bindInputs() {
+        textView
+            .textPublisher
+            .unretained(self)
+            .sink { view, message in
+                view.viewActionPublisher.send(.textInputChanged(message: message ?? ""))
+            }
+            .store(in: &store)
+        
+        submitButton
+            .tapPublisher
+            .unretained(self)
+            .sink { view in
+                view.viewActionPublisher.send(.submitButtonTapped)
+            }
+            .store(in: &store)
     }
     
     private func attribute() {

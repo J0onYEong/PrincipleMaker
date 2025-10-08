@@ -5,43 +5,99 @@
 //  Created by choijunios on 10/5/25.
 //
 
+import Combine
 import SnapKit
 import UIKit
 import SwiftUI
 
-final class UserStoryInputViewController: UIViewController {
+@MainActor
+final class UserStoryInputViewController: BaseViewController {
+    private typealias MessageDataSource = UITableViewDiffableDataSource<Int, MessageModel>
+    private typealias MessageSnapshot = NSDiffableDataSourceSnapshot<Int, MessageModel>
+    
+    private var viewModel: UserStoryInputViewModel!
+    private var store: Set<AnyCancellable> = []
+    
     private let contentView: UIView = UIView()
     private let messageTableView: UITableView = UITableView()
     private let userStoryTextField: UserStoryTextField = UserStoryTextField()
-    
-    init() {
-        super.init(nibName: nil, bundle: nil)
-        setupKeyboardNotification()
-    }
-    required init?(coder: NSCoder) { nil }
+    private lazy var messageDataSource: MessageDataSource = makeMessageDataSource()
     
     @MainActor
     deinit {
         removeKeyboardObserver()
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        attribute()
-        layout()
+    override func initialize() {
+        setupKeyboardNotification()
     }
     
-    private func attribute() {
+    func bind(viewModel: UserStoryInputViewModel) {
+        self.viewModel = viewModel
+        
+        // Outputs
+        viewModel
+            .messageModels
+            .unretained(self)
+            .sink { vc, models in
+                vc.applyMessageSnapshot(with: models, animatingDifferences: true)
+            }
+            .store(in: &store)
+        
+        // Inputs
+        lifeCyclePublisher
+            .unretained(viewModel)
+            .sink { vm, lifeCycleEvent in
+                switch lifeCycleEvent {
+                case .viewDidLoad:
+                    vm.send(input: .viewDidLoad)
+                default:
+                    break
+                }
+            }
+            .store(in: &store)
+        
+        userStoryTextField
+            .viewActionPublisher
+            .unretained(viewModel)
+            .sink { vm, viewAction in
+                switch viewAction {
+                case .submitButtonTapped:
+                    vm.send(input: .userStoryTextSubmitButtonTapped)
+                case let .textInputChanged(text):
+                    vm.send(input: .userStoryTextChanged(text: text))
+                }
+            }
+            .store(in: &store)
+    }
+    
+    override func attribute() {
+        self.navigationItem.title = "오늘의 기록"
+        
+        view.backgroundColor = .white
         view.addSubview(contentView)
         
+        messageTableView.backgroundColor = .clear
+        messageTableView.register(cellType: MessageCell.self)
+        messageTableView.rowHeight = UITableView.automaticDimension
+        messageTableView.estimatedRowHeight = 56
+        messageTableView.separatorStyle = .none
+        messageTableView.allowsSelection = false
+        messageTableView.dataSource = messageDataSource
         contentView.addSubview(messageTableView)
         
         contentView.addSubview(userStoryTextField)
     }
     
-    private func layout() {
+    override func layout() {
         contentView.snp.makeConstraints { make in
             make.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        messageTableView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
+            make.bottom.equalToSuperview()
         }
         
         userStoryTextField.snp.makeConstraints { make in
@@ -88,6 +144,21 @@ final class UserStoryInputViewController: UIViewController {
             }
             view.layoutIfNeeded()
         }
+    }
+    
+    private func makeMessageDataSource() -> MessageDataSource {
+        MessageDataSource(tableView: messageTableView) { tableView, indexPath, item in
+            let cell: MessageCell = tableView.dequeueReusableCell(for: indexPath)
+            cell.configure(using: item)
+            return cell
+        }
+    }
+    
+    private func applyMessageSnapshot(with messages: [MessageModel], animatingDifferences: Bool = true) {
+        var snapshot = MessageSnapshot()
+        snapshot.appendSections([0])
+        snapshot.appendItems(messages, toSection: 0)
+        messageDataSource.apply(snapshot, animatingDifferences: animatingDifferences)
     }
 }
 
