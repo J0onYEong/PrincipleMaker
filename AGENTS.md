@@ -54,6 +54,18 @@ func 올바르게_데이터가_수집되는지_확인() {
 }
 ```
 
+## External Dependency add guide
+
+If I provide you with a `.git` link and version for a dependency,  
+you should add that dependency to the `Tuist/Package.swift` file.
+
+If I ask you to create a dependency graph for that dependency,  
+you should refer to `Project.swift` and establish the appropriate relationships.
+
+After updating the dependency configuration,  
+run `tuist install` to fetch the dependency from the provided link,  
+and then run `tuist generate` to apply the updated dependency graph.
+
 ## Coding Style & Naming Conventions
 
 ### View & ViewController
