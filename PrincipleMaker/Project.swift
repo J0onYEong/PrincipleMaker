@@ -21,6 +21,7 @@ let project = Project(
                 .external(name: "CombineCocoa"),
                 .external(name: "SnapKit"),
                 .external(name: "Reusable"),
+                .external(name: "Swinject"),
             ],
             settings: .settings(
                 base: [
