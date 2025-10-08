@@ -8,9 +8,18 @@
 import SnapKit
 import UIKit
 
+enum StoryMessageDirection {
+    case left, right
+}
+
 enum StoryMessageMode {
     case message(String)
     case typing
+}
+
+struct StoryMessageState {
+    let direction: StoryMessageDirection
+    let mode: StoryMessageMode
 }
 
 final class MessageCell: UITableViewCell {
@@ -93,8 +102,10 @@ final class MessageCell: UITableViewCell {
         loadingImage.removeAllSymbolEffects()
     }
     
-    func configure(using mode: StoryMessageMode) {
-        switch mode {
+    func configure(using state: StoryMessageState) {
+        updateLayout(for: state.direction)
+
+        switch state.mode {
         case .message(let string):
             loadingImage.isHidden = true
             stopLoadingAnimation()
@@ -105,10 +116,57 @@ final class MessageCell: UITableViewCell {
             messageLabel.text = ""
         }
     }
+
+    private func updateLayout(for direction: StoryMessageDirection) {
+        switch direction {
+        case .left:
+            hostImageView.snp.remakeConstraints { make in
+                make.top.equalToSuperview()
+                make.left.equalToSuperview()
+                make.width.height.equalTo(30)
+            }
+
+            messageContainer.snp.remakeConstraints { make in
+                make.top.equalToSuperview().inset(15)
+                make.left.equalTo(hostImageView.snp.right).offset(3)
+                make.right.lessThanOrEqualToSuperview().inset(20)
+                make.height.greaterThanOrEqualTo(Config.messageContainerMinHeight)
+                make.width.greaterThanOrEqualTo(Config.messageContainerMinWidth)
+            }
+        case .right:
+            hostImageView.snp.remakeConstraints { make in
+                make.top.equalToSuperview()
+                make.right.equalToSuperview()
+                make.width.height.equalTo(30)
+            }
+
+            messageContainer.snp.remakeConstraints { make in
+                make.top.equalToSuperview().inset(15)
+                make.right.equalTo(hostImageView.snp.left).offset(-3)
+                make.left.greaterThanOrEqualToSuperview().inset(20)
+                make.height.greaterThanOrEqualTo(Config.messageContainerMinHeight)
+                make.width.greaterThanOrEqualTo(Config.messageContainerMinWidth)
+            }
+        }
+    }
 }
 
-#Preview(traits: .defaultLayout) {
+#Preview("Left 메세지", traits: .defaultLayout) {
     let view = MessageCell()
-    view.configure(using: .message("HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello"))
+    let state = StoryMessageState(
+        direction: .left,
+        mode: .message("HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello")
+    )
+    view.configure(using: state)
+    return view
+}
+
+#Preview("Right 로딩중", traits: .defaultLayout) {
+    let view = MessageCell()
+    let state = StoryMessageState(
+        direction: .right,
+        mode: .typing
+    )
+    view.configure(using: state)
     return view
 }
