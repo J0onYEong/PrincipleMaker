@@ -20,6 +20,7 @@ let project = Project(
             dependencies: [
                 .external(name: "CombineCocoa"),
                 .external(name: "SnapKit"),
+                .external(name: "Reusable"),
             ],
             settings: .settings(
                 base: [

@@ -17,5 +17,6 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/CombineCommunity/CombineCocoa.git", exact: "0.4.1"),
         .package(url: "https://github.com/SnapKit/SnapKit.git", exact: "5.7.1"),
+        .package(url: "https://github.com/AliSoftware/Reusable.git", exact: "4.1.2"),
     ]
 )
