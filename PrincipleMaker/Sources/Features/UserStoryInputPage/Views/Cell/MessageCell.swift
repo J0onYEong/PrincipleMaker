@@ -13,7 +13,7 @@ final class MessageCell: UITableViewCell, Reusable {
     private enum Config {
         static let messageLabelInset: CGFloat = 10
         static let messageContainerMinWidth: CGFloat = 50
-        static let messageContainerMinHeight: CGFloat = 30
+        static let messageContainerMinHeight: CGFloat = 40
     }
     private let hostImageView: UIImageView = UIImageView()
     private let messageContainer: UIView = UIView()
@@ -79,7 +79,7 @@ final class MessageCell: UITableViewCell, Reusable {
         
         loadingImage.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalTo(15)
+            make.width.height.equalTo(20)
         }
     }
     

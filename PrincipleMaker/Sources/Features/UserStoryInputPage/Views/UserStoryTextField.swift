@@ -41,6 +41,7 @@ final class UserStoryTextField: UIView {
     }
     required init?(coder: NSCoder) { nil }
     
+    @discardableResult
     override func resignFirstResponder() -> Bool {
         textView.resignFirstResponder()
     }
@@ -59,6 +60,7 @@ final class UserStoryTextField: UIView {
             .unretained(self)
             .sink { view in
                 view.viewActionPublisher.send(.submitButtonTapped)
+                view.textView.text = ""
             }
             .store(in: &store)
     }
