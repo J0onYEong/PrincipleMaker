@@ -8,20 +8,6 @@
 import SnapKit
 import UIKit
 
-enum StoryMessageDirection {
-    case left, right
-}
-
-enum StoryMessageMode {
-    case message(String)
-    case typing
-}
-
-struct StoryMessageState {
-    let direction: StoryMessageDirection
-    let mode: StoryMessageMode
-}
-
 final class MessageCell: UITableViewCell {
     private enum Config {
         static let messageLabelInset: CGFloat = 10
@@ -102,10 +88,10 @@ final class MessageCell: UITableViewCell {
         loadingImage.removeAllSymbolEffects()
     }
     
-    func configure(using state: StoryMessageState) {
-        updateLayout(for: state.direction)
+    func configure(using model: MessageModel) {
+        updateLayout(for: model.direction)
 
-        switch state.mode {
+        switch model.mode {
         case .message(let string):
             loadingImage.isHidden = true
             stopLoadingAnimation()
@@ -117,7 +103,7 @@ final class MessageCell: UITableViewCell {
         }
     }
 
-    private func updateLayout(for direction: StoryMessageDirection) {
+    private func updateLayout(for direction: MessageDirection) {
         switch direction {
         case .left:
             hostImageView.snp.remakeConstraints { make in
@@ -153,7 +139,7 @@ final class MessageCell: UITableViewCell {
 
 #Preview("Left 메세지", traits: .defaultLayout) {
     let view = MessageCell()
-    let state = StoryMessageState(
+    let state = MessageModel(
         direction: .left,
         mode: .message("HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello")
     )
@@ -163,7 +149,7 @@ final class MessageCell: UITableViewCell {
 
 #Preview("Right 로딩중", traits: .defaultLayout) {
     let view = MessageCell()
-    let state = StoryMessageState(
+    let state = MessageModel(
         direction: .right,
         mode: .typing
     )

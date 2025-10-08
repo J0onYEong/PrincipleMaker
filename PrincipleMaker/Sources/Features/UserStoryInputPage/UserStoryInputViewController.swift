@@ -11,6 +11,7 @@ import SwiftUI
 
 final class UserStoryInputViewController: UIViewController {
     private let contentView: UIView = UIView()
+    private let messageTableView: UITableView = UITableView()
     private let userStoryTextField: UserStoryTextField = UserStoryTextField()
     
     init() {
@@ -32,6 +33,8 @@ final class UserStoryInputViewController: UIViewController {
     
     private func attribute() {
         view.addSubview(contentView)
+        
+        contentView.addSubview(messageTableView)
         
         contentView.addSubview(userStoryTextField)
     }
