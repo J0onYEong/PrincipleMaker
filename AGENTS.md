@@ -74,11 +74,11 @@ I use two setup functions for views and view controllers:
 ```swift
 func attribute() {
     // configure attributes
+    // all addSubview calls must take place here
 }
 
 func layout() {
     // configure layouts
-    // all addSubview calls must take place here
 }
 ```
 you muse call these functions in `init() { ... }`.
@@ -99,3 +99,5 @@ Follow the design principles and styles described there when implementing UI.
 ## Commit & Pull Request Guidelines
 
 Follow the existing history: prefix the subject with the change type (`Feat,`, `Fix,`, `Chore,`) followed by a concise, imperative description (English or Korean is acceptable). Squash incidental WIP commits prior to pushing. Pull requests should summarise the change, list manual or automated test steps, link related issues, and attach screenshots or recordings for UI updates. Request review from an iOS maintainer and wait for CI to pass before merging.
+
+When i order "commit for changes", you should commot staged files only.
