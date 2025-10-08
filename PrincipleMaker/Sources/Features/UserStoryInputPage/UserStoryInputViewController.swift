@@ -80,6 +80,7 @@ final class UserStoryInputViewController: BaseViewController {
     
     override func attribute() {
         self.navigationItem.title = "오늘의 기록"
+        self.view.backgroundColor = .systemBackground
         
         view.addSubview(contentView)
         view.addGestureRecognizer(dismissKeyboardTapRecognizer)
