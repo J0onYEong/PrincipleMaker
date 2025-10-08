@@ -1,16 +1,89 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-PrincipleMaker is managed with Tuist. The `PrincipleMaker/Project.swift` target pulls its sources from `PrincipleMaker/Sources`, where `Application` hosts app entry points and `Features` groups screen-specific modules. Shared assets, storyboards, and localized content live in `PrincipleMaker/Resources`. Tooling and dependency manifests sit under `Tuist/` and `Plugins/EnvironmentPlugin`, which define bundle identifiers, deployment targets, and Info.plist helpers. Generated artifacts should remain inside the `Derived/` folders and must not be committed.
 
-## Build, Test, and Development Commands
-Run `mise install` once to provision Tuist 4.78.2. Use `tuist generate` to create the editable Xcode workspace (`PrincipleMakerWorkspace.xcworkspace`), then `open PrincipleMakerWorkspace.xcworkspace` to launch Xcode. For scripted builds run `tuist build PrincipleMaker` and target specific simulators with `--device "iPhone 16 Pro"`. Execute `tuist test PrincipleMaker` to launch the XCTest suite when tests exist. Prefer `tuist clean` over manual folder deletions whenever you need to reset derived data.
+This project uses Tuist for project management.  
+You can view the module dependency graph in the `Project.swift` file.  
+The final application target and its module configuration are defined in `root/PrincipleMaker/Project.swift`.
+
+Currently, the project consists of a single module, but as it grows, I plan to split it into multiple modules.  
+Please keep in mind that even though all features are currently located in one directory, they should not have strong dependencies on each other.  
+You are encouraged to suggest module separations when appropriate.
+
+
+## Test Code guide
+
+Each module has its own test target.  
+If you want to test a specific feature, write the test code in the test target’s source directory located at `moduleRoot/Tests/`.
+
+Currently, all features are contained within a single module, so there is only one unit test target.  
+To keep the tests organized, you should create a separate directory for each feature’s tests.
+
+For example, if you are testing `AFeature` and I ask you to implement a type for it,  
+create a directory named `ATests` (if it doesn’t already exist) and add a file named `SomeTypeTests.swift` for the test code.
+
+Each test case should follow the Given–When–Then structure.  
+For readability and maintainability, use one assertion per test case.  
+Also, use Korean naming for test case method names for better contextual readability.
+use "sut" naming for system under test.
+
+Example:
+```swift
+@Test
+func 올바르게_데이터가_수집되는지_확인() {
+    // Given
+    let sut = SomeType()
+
+    // When
+    let result = sut.someMethod()
+
+    // Then
+    #expect(result, true, "값이 true가 아님")
+}
+```
 
 ## Coding Style & Naming Conventions
-The project compiles with Swift 6.2; match that toolchain to avoid ABI mismatches. Keep indentation at four spaces and lines under roughly 120 characters. Follow Swift API Design Guidelines: types and protocols in UpperCamelCase, methods and properties in lowerCamelCase, and enums with lowerCamelCase cases. Group feature-specific files inside `Sources/Features/<FeatureName>`; suffix view implementations with `View` and view models with `ViewModel`. Use Xcode’s “Editor > Structure > Re-Indent” before committing to normalize formatting.
 
-## Testing Guidelines
-We rely on XCTest. Mirror production modules under `PrincipleMaker/Tests/<FeatureName>Tests`, naming suites `<FeatureName>Tests` and methods `test_<behavior>_when_<scenario>`. Store mocks and fixtures in a `__Mocks__` subfolder adjacent to the test file. Target meaningful coverage for new logic and add at least one snapshot test when you change UI rendering. Run `tuist test PrincipleMaker --device "iPhone 16 Pro"` locally before requesting review.
+### View & ViewController
+
+I don’t use Storyboards for views or view controllers.  
+However, I want to use an initializer with no arguments.  
+You should create initializers as shown below:
+
+```swift
+init() {
+    super.init(frame: .zero)
+    // call initialization functions here
+}
+required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+```
+
+I use two setup functions for views and view controllers:
+```swift
+func attribute() {
+    // configure attributes
+}
+
+func layout() {
+    // configure layouts
+    // all addSubview calls must take place here
+}
+```
+you muse call these functions in `init() { ... }`.
+
+### UI Design guide
+
+This project targets iOS 26 and I actively use Liquid Glass Design.  
+You should follow this design style throughout the project.
+
+Do not use any custom fonts or colors.  
+Always use system colors and system fonts to maintain consistency with the iOS design language.
+
+You should refer to the following website for Liquid Glass design guidance:  
+https://sebvidal.com/blog/whats-new-in-uikit-26
+
+Follow the design principles and styles described there when implementing UI.
 
 ## Commit & Pull Request Guidelines
+
 Follow the existing history: prefix the subject with the change type (`Feat,`, `Fix,`, `Chore,`) followed by a concise, imperative description (English or Korean is acceptable). Squash incidental WIP commits prior to pushing. Pull requests should summarise the change, list manual or automated test steps, link related issues, and attach screenshots or recordings for UI updates. Request review from an iOS maintainer and wait for CI to pass before merging.
