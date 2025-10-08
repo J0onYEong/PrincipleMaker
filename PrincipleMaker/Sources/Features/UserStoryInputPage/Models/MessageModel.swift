@@ -19,5 +19,5 @@ enum MessageMode: Hashable {
 struct MessageModel: Identifiable, Hashable {
     let id: String = UUID().uuidString
     let direction: MessageDirection
-    let mode: MessageMode
+    var mode: MessageMode
 }

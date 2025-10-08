@@ -12,6 +12,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
+        executeDependencyInjection()
+        
         let viewController = UserStoryInputViewController()
         viewController.bind(viewModel: UserStoryInputViewModel())
         
@@ -19,6 +21,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             rootViewController: viewController
         )
         window.makeKeyAndVisible()
+    }
+    
+    private func executeDependencyInjection() {
+        DependencyInjector.shared.register(
+            UserStoryDialogProvider.self,
+            DefaultUserStoryDialogProvider()
+        )
     }
 }
 

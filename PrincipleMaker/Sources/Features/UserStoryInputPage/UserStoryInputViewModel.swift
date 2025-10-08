@@ -8,7 +8,10 @@
 import Combine
 
 @MainActor
-final class UserStoryInputViewModel {
+final class UserStoryInputViewModel: Sendable {
+    // Dependency
+    @Injected private var userStoryDialogProvider: UserStoryDialogProvider
+    
     // Outputs
     var messageModels: AnyPublisher<[MessageModel], Never> {
         $_messageModels.eraseToAnyPublisher()
@@ -29,24 +32,47 @@ extension UserStoryInputViewModel {
     func send(input: Input) {
         switch input {
         case .viewDidLoad:
-            let initialMessageModel = MessageModel(
-                direction: .left,
-                mode: .message("오늘 너의 하루를 알려줘!")
-            )
-            self._messageModels = [initialMessageModel]
+            excuteNextDialogProcress()
             
         case let .userStoryTextChanged(text):
             self._userStoryText = text
             
         case .userStoryTextSubmitButtonTapped:
             guard _userStoryText.isEmpty == false else { return }
+            let userStoryText = _userStoryText
             let messageModel = MessageModel(
                 direction: .right,
-                mode: .message(_userStoryText)
+                mode: .message(userStoryText)
             )
             var currentMessages = _messageModels
             currentMessages.append(messageModel)
             self._messageModels = currentMessages
+            
+            excuteNextDialogProcress(reply: userStoryText)
+        }
+    }
+}
+
+extension UserStoryInputViewModel {
+    func excuteNextDialogProcress(reply: String? = nil) {
+        let loadingModel = MessageModel(
+            direction: .left,
+            mode: .typing
+        )
+        self._messageModels.append(loadingModel)
+        
+        Task(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+            let nextMessage = try await userStoryDialogProvider.requestDialog(reply: reply)
+            await MainActor.run { [weak self] in
+                guard
+                    let self,
+                    let loadingMessageIndex = _messageModels.firstIndex(where: { $0.id == loadingModel.id })
+                else { return }
+                var currentModels = _messageModels
+                currentModels[loadingMessageIndex].mode = .message(nextMessage)
+                self._messageModels = currentModels
+            }
         }
     }
 }
