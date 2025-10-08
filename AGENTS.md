@@ -1,5 +1,13 @@
 # Repository Guidelines
 
+## Project Specifications
+
+- **iOS:** 26  
+- **Swift:** 6.2  
+- **UI Framework:** UIKit-based, with partial SwiftUI integration  
+- **Project Management:** Tuist  
+- **Testing Framework:** Swift Testing (for unit testing) 
+
 ## Project Structure & Module Organization
 
 This project uses Tuist for project management.  
