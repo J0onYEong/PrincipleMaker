@@ -4,6 +4,8 @@ import EnvironmentPlugin
 let project = Project(
     name: "PrincipleMaker",
     targets: [
+        
+        // MARK: Final application module
         .target(
             name: ProjectEnvironment.serviceDisplayName,
             destinations: [.iPhone],
@@ -21,9 +23,22 @@ let project = Project(
             ],
             settings: .settings(
                 base: [
-                    "SWIFT_VERSION": "\(ProjectEnvironment.swiftVersion)"
+                    "SWIFT_VERSION": "\(ProjectEnvironment.swiftVersion)",
+                    "ENABLE_TESTABILITY": "YES",
                 ]
             )
-        )
+        ),
+        
+        // MARK: Test module
+        .target(
+            name: ProjectEnvironment.serviceDisplayName + "Tests",
+            destinations: [.iPhone],
+            product: .unitTests,
+            bundleId: ProjectEnvironment.mainAppTargetBundleId + ".tests",
+            buildableFolders: ["Tests"],
+            dependencies: [
+                .target(name: ProjectEnvironment.serviceDisplayName)
+            ]
+        ),
     ]
 )
