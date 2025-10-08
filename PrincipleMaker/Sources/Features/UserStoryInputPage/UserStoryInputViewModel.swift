@@ -6,6 +6,7 @@
 //
 
 import Combine
+import Foundation
 
 @MainActor
 final class UserStoryInputViewModel: Sendable {
@@ -20,6 +21,13 @@ final class UserStoryInputViewModel: Sendable {
     // Internal states
     @Published private var _messageModels: [MessageModel] = []
     @Published private var _userStoryText: String = ""
+    private var messageBuffer: [String] = []
+    
+    // Internal publishers
+    private let messageSubmitPublisher = PassthroughSubject<Void, Never>()
+    private var store: Set<AnyCancellable> = []
+    
+    init() {}
 }
 
 extension UserStoryInputViewModel {
@@ -32,6 +40,7 @@ extension UserStoryInputViewModel {
     func send(input: Input) {
         switch input {
         case .viewDidLoad:
+            bindUserInteractionPublishers()
             excuteNextDialogProcress()
             
         case let .userStoryTextChanged(text):
@@ -47,14 +56,27 @@ extension UserStoryInputViewModel {
             var currentMessages = _messageModels
             currentMessages.append(messageModel)
             self._messageModels = currentMessages
-            
-            excuteNextDialogProcress(reply: userStoryText)
+            self.messageBuffer.append(userStoryText)
+            messageSubmitPublisher.send(())
         }
     }
 }
 
 extension UserStoryInputViewModel {
-    func excuteNextDialogProcress(reply: String? = nil) {
+    private func bindUserInteractionPublishers() {
+        messageSubmitPublisher
+            .debounce(for: .seconds(3), scheduler: RunLoop.main)
+            .receive(on: DispatchQueue.main)
+            .unretained(self)
+            .sink { vm in
+                let accumulatedMessage = vm.messageBuffer.joined(separator: "\n")
+                vm.excuteNextDialogProcress(reply: accumulatedMessage)
+                vm.messageBuffer.removeAll()
+            }
+            .store(in: &store)
+    }
+    
+    private func excuteNextDialogProcress(reply: String? = nil) {
         let loadingModel = MessageModel(
             direction: .left,
             mode: .typing

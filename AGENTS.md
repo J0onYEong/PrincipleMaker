@@ -113,3 +113,4 @@ Follow the design principles and styles described there when implementing UI.
 Follow the existing history: prefix the subject with the change type (`Feat,`, `Fix,`, `Chore,`) followed by a concise, imperative description (English or Korean is acceptable). Squash incidental WIP commits prior to pushing. Pull requests should summarise the change, list manual or automated test steps, link related issues, and attach screenshots or recordings for UI updates. Request review from an iOS maintainer and wait for CI to pass before merging.
 
 When i order "commit for changes", you should commot staged files only.
+You should use korean for commit message except for prefix(Feat, Fix ..)

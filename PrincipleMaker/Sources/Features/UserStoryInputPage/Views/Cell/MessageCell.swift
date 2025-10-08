@@ -66,6 +66,7 @@ final class MessageCell: UITableViewCell, Reusable {
             make.top.equalToSuperview().inset(15)
             make.left.equalTo(hostImageView.snp.right).offset(3)
             make.right.lessThanOrEqualToSuperview().inset(20)
+            make.bottom.equalToSuperview()
             
             make.height.greaterThanOrEqualTo(Config.messageContainerMinHeight)
             make.width.greaterThanOrEqualTo(Config.messageContainerMinWidth)
@@ -123,6 +124,7 @@ final class MessageCell: UITableViewCell, Reusable {
                 make.right.lessThanOrEqualToSuperview().inset(20)
                 make.height.greaterThanOrEqualTo(Config.messageContainerMinHeight)
                 make.width.greaterThanOrEqualTo(Config.messageContainerMinWidth)
+                make.bottom.equalToSuperview()
             }
         case .right:
             hostImageView.snp.removeConstraints()
@@ -140,6 +142,7 @@ final class MessageCell: UITableViewCell, Reusable {
                 make.left.greaterThanOrEqualToSuperview().inset(20)
                 make.height.greaterThanOrEqualTo(Config.messageContainerMinHeight)
                 make.width.greaterThanOrEqualTo(Config.messageContainerMinWidth)
+                make.bottom.equalToSuperview()
             }
         }
     }

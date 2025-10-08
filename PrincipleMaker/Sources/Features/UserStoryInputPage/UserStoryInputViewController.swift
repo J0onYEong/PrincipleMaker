@@ -97,7 +97,7 @@ final class UserStoryInputViewController: BaseViewController {
         messageTableView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
-            make.bottom.equalToSuperview()
+            make.bottom.equalTo(userStoryTextField.snp.top).offset(-5)
         }
         
         userStoryTextField.snp.makeConstraints { make in
