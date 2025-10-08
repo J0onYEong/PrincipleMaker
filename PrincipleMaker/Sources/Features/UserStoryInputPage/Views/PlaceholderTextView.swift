@@ -14,6 +14,14 @@ final class PlaceholderTextView: UITextView, UITextViewDelegate {
         didSet { placeholderLabel.text = placeholder }
     }
     
+    override var text: String! {
+        get { super.text }
+        set {
+            super.text = newValue
+            checkPlaceHolderVisibility()
+        }
+    }
+    
     override var intrinsicContentSize: CGSize {
         CGSize(
             width: UIView.noIntrinsicMetric,
@@ -47,7 +55,11 @@ final class PlaceholderTextView: UITextView, UITextViewDelegate {
     }
     
     func textViewDidChange(_ textView: UITextView) {
-        placeholderLabel.isHidden = !textView.text.isEmpty
-        textView.invalidateIntrinsicContentSize()
+        checkPlaceHolderVisibility()
+    }
+    
+    private func checkPlaceHolderVisibility() {
+        placeholderLabel.isHidden = !text.isEmpty
+        invalidateIntrinsicContentSize()
     }
 }

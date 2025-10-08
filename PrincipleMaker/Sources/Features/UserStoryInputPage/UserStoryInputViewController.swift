@@ -22,6 +22,12 @@ final class UserStoryInputViewController: BaseViewController {
     private let messageTableView: UITableView = UITableView()
     private let userStoryTextField: UserStoryTextField = UserStoryTextField()
     private lazy var messageDataSource: MessageDataSource = makeMessageDataSource()
+    private lazy var dismissKeyboardTapRecognizer: UITapGestureRecognizer = {
+        let recognizer = UITapGestureRecognizer(target: self, action: #selector(onBackgroundTapped))
+        recognizer.cancelsTouchesInView = false
+        recognizer.delegate = self
+        return recognizer
+    }()
     
     @MainActor
     deinit {
@@ -41,6 +47,7 @@ final class UserStoryInputViewController: BaseViewController {
             .unretained(self)
             .sink { vc, models in
                 vc.applyMessageSnapshot(with: models, animatingDifferences: true)
+                vc.adjustScrollOffsetWhenCellDataChanged()
             }
             .store(in: &store)
         
@@ -76,6 +83,7 @@ final class UserStoryInputViewController: BaseViewController {
         
         view.backgroundColor = .white
         view.addSubview(contentView)
+        view.addGestureRecognizer(dismissKeyboardTapRecognizer)
         
         messageTableView.backgroundColor = .clear
         messageTableView.register(cellType: MessageCell.self)
@@ -160,8 +168,35 @@ final class UserStoryInputViewController: BaseViewController {
         snapshot.appendItems(messages, toSection: 0)
         messageDataSource.apply(snapshot, animatingDifferences: animatingDifferences)
     }
+    
+    private func adjustScrollOffsetWhenCellDataChanged() {
+        messageTableView.layoutIfNeeded()
+        let contentHeight = messageTableView.contentSize.height
+        let tableViewHeight = messageTableView.bounds.height
+        if contentHeight > tableViewHeight {
+            let scrollYOffset = contentHeight - tableViewHeight
+            messageTableView.setContentOffset(
+                CGPoint(x: 0, y: scrollYOffset),
+                animated: true
+            )
+        }
+    }
+    
+    @objc
+    private func onBackgroundTapped() {
+        userStoryTextField.resignFirstResponder()
+    }
 }
 
 #Preview(traits: .defaultLayout) {
     UserStoryInputViewController()
+}
+
+extension UserStoryInputViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        guard gestureRecognizer === dismissKeyboardTapRecognizer else { return true }
+        let location = touch.location(in: view)
+        let textFieldFrameInView = userStoryTextField.convert(userStoryTextField.bounds, to: view)
+        return textFieldFrameInView.contains(location) == false
+    }
 }
