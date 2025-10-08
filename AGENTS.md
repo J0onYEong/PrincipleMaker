@@ -1,3 +1,7 @@
+# Ground rule
+
+- use context7 mcp server for latest development doucuments if needed. 
+
 # Repository Guidelines
 
 ## Project Specifications
