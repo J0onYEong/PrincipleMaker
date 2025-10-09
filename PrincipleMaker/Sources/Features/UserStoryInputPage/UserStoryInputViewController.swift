@@ -157,7 +157,7 @@ final class UserStoryInputViewController: BaseViewController {
     private func makeMessageDataSource() -> MessageDataSource {
         MessageDataSource(tableView: messageTableView) { tableView, indexPath, item in
             let cell: MessageCell = tableView.dequeueReusableCell(for: indexPath)
-            cell.configure(using: item)
+            cell.configure(using: item, isFirstCell: indexPath.row == 0)
             return cell
         }
     }

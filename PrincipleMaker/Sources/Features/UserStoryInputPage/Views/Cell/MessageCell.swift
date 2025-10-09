@@ -12,17 +12,20 @@ import UIKit
 
 final class MessageCell: UITableViewCell, Reusable {
     private enum Config {
+        static let cellTopPadding: CGFloat = 15
         static let messageLabelInset: CGFloat = 10
         static let messageContainerMinWidth: CGFloat = 75
         static let messageContainerMinHeight: CGFloat = 50
     }
+    
+    private let topPaddingView: UIView = UIView()
+    private let realContentView: UIView = UIView()
     private let hostImageView: GlassImageView = GlassImageView()
     private let messageContainer: UIVisualEffectView = UIVisualEffectView()
     private let messageLabel: UILabel = UILabel()
     private lazy var loadingView: LottieAnimationView = createLottieView()
     
-    // Animation
-    private var loadingTimer: Timer?
+    private var topPaddingHeightConstraint: Constraint?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -32,13 +35,15 @@ final class MessageCell: UITableViewCell, Reusable {
     required init?(coder: NSCoder) { nil }
     
     override func prepareForReuse() {
+        super.prepareForReuse()
         stopLoadingAnimation()
         messageLabel.text = nil
     }
     
-    func configure(using model: MessageModel) {
+    func configure(using model: MessageModel, isFirstCell: Bool) {
+        updateTopPadding(isFirstCell: isFirstCell)
         updateLayout(for: model.direction)
-
+        
         switch model.mode {
         case .message(let string):
             setLoadingView(isPresent: false)
@@ -52,9 +57,14 @@ final class MessageCell: UITableViewCell, Reusable {
     }
     
     private func attribute() {
-        self.backgroundColor = .clear
-        
+        backgroundColor = .clear
         contentView.backgroundColor = .clear
+        
+        topPaddingView.backgroundColor = .clear
+        realContentView.backgroundColor = .clear
+        
+        contentView.addSubview(topPaddingView)
+        contentView.addSubview(realContentView)
         
         hostImageView.image = UIImage(systemName: "person.circle")
         hostImageView.contentMode = .scaleAspectFit
@@ -62,16 +72,16 @@ final class MessageCell: UITableViewCell, Reusable {
         hostImageView.radius = 10
         hostImageView.inset = 5
         hostImageView.imageSize = .init(width: 30, height: 30)
-        contentView.addSubview(hostImageView)
+        realContentView.addSubview(hostImageView)
         
-        messageContainer.cornerConfiguration = UICornerConfiguration.corners(radius: .fixed(10))
+        messageContainer.cornerConfiguration = .corners(radius: .fixed(10))
         let glassEffect = UIGlassEffect(style: .regular)
         glassEffect.tintColor = .lightGray.withAlphaComponent(0.3)
         messageContainer.effect = glassEffect
-        contentView.addSubview(messageContainer)
+        realContentView.addSubview(messageContainer)
         
         messageLabel.font = .systemFont(ofSize: 17)
-        messageLabel.textColor = .black
+        messageLabel.textColor = .label
         messageLabel.numberOfLines = 0
         messageContainer.contentView.addSubview(messageLabel)
         
@@ -80,6 +90,16 @@ final class MessageCell: UITableViewCell, Reusable {
     }
     
     private func layout() {
+        topPaddingView.snp.makeConstraints { make in
+            make.top.left.right.equalToSuperview()
+            topPaddingHeightConstraint = make.height.equalTo(Config.cellTopPadding).constraint
+        }
+        
+        realContentView.snp.makeConstraints { make in
+            make.top.equalTo(topPaddingView.snp.bottom)
+            make.left.right.bottom.equalToSuperview()
+        }
+        
         hostImageView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.left.equalToSuperview()
@@ -87,10 +107,9 @@ final class MessageCell: UITableViewCell, Reusable {
         
         messageContainer.snp.makeConstraints { make in
             make.top.equalToSuperview().inset(15)
-            make.left.equalTo(hostImageView.snp.right).offset(3)
-            make.right.lessThanOrEqualToSuperview().inset(20)
+            make.left.equalTo(hostImageView.snp.right).offset(5)
+            make.right.lessThanOrEqualTo(realContentView.snp.right).inset(20)
             make.bottom.equalToSuperview()
-            
             make.height.greaterThanOrEqualTo(Config.messageContainerMinHeight)
             make.width.greaterThanOrEqualTo(Config.messageContainerMinWidth)
         }
@@ -106,7 +125,7 @@ final class MessageCell: UITableViewCell, Reusable {
         
         loadingView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.height.equalTo(Config.messageContainerMinHeight - 3 * 2)
+            make.height.equalTo(Config.messageContainerMinHeight - Config.messageLabelInset)
         }
     }
     
@@ -123,7 +142,11 @@ final class MessageCell: UITableViewCell, Reusable {
     private func stopLoadingAnimation() {
         loadingView.stop()
     }
-
+    
+    private func updateTopPadding(isFirstCell: Bool) {
+        topPaddingHeightConstraint?.update(offset: isFirstCell ? 0 : Config.cellTopPadding)
+    }
+    
     private func updateLayout(for direction: MessageDirection) {
         switch direction {
         case .left:
@@ -134,11 +157,11 @@ final class MessageCell: UITableViewCell, Reusable {
                 make.top.equalToSuperview()
                 make.left.equalToSuperview()
             }
-
+            
             messageContainer.snp.makeConstraints { make in
                 make.top.equalToSuperview().inset(15)
-                make.left.equalTo(hostImageView.snp.right).offset(3)
-                make.right.lessThanOrEqualToSuperview().inset(20)
+                make.left.equalTo(hostImageView.snp.right).offset(5)
+                make.right.lessThanOrEqualTo(realContentView.snp.right).inset(20)
                 make.height.greaterThanOrEqualTo(Config.messageContainerMinHeight)
                 make.width.greaterThanOrEqualTo(Config.messageContainerMinWidth)
                 make.bottom.equalToSuperview()
@@ -149,13 +172,13 @@ final class MessageCell: UITableViewCell, Reusable {
             
             hostImageView.snp.makeConstraints { make in
                 make.top.equalToSuperview()
-                make.right.equalToSuperview()
+                make.right.equalTo(realContentView.snp.right)
             }
-
+            
             messageContainer.snp.makeConstraints { make in
                 make.top.equalToSuperview().inset(15)
-                make.right.equalTo(hostImageView.snp.left).offset(-3)
-                make.left.greaterThanOrEqualToSuperview().inset(20)
+                make.right.equalTo(hostImageView.snp.left).offset(-5)
+                make.left.greaterThanOrEqualTo(realContentView.snp.left).inset(20)
                 make.height.greaterThanOrEqualTo(Config.messageContainerMinHeight)
                 make.width.greaterThanOrEqualTo(Config.messageContainerMinWidth)
                 make.bottom.equalToSuperview()
@@ -164,9 +187,10 @@ final class MessageCell: UITableViewCell, Reusable {
     }
     
     private func createLottieView() -> LottieAnimationView {
-        guard let path = Bundle.main.path(forResource: "Thinking", ofType: "json") else { fatalError() }
-        let lottieView = LottieAnimationView(filePath: path)
-        return lottieView
+        guard let path = Bundle.main.path(forResource: "Thinking", ofType: "json") else {
+            fatalError("Lottie resource(Thinking.json) missing.")
+        }
+        return LottieAnimationView(filePath: path)
     }
 }
 
@@ -176,7 +200,7 @@ final class MessageCell: UITableViewCell, Reusable {
         direction: .left,
         mode: .message("HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello")
     )
-    view.configure(using: state)
+    view.configure(using: state, isFirstCell: true)
     return view
 }
 
@@ -186,6 +210,6 @@ final class MessageCell: UITableViewCell, Reusable {
         direction: .right,
         mode: .typing
     )
-    view.configure(using: state)
+    view.configure(using: state, isFirstCell: false)
     return view
 }
