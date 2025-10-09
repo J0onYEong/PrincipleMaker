@@ -5,6 +5,7 @@
 //  Created by choijunios on 10/7/25.
 //
 
+import Lottie
 import Reusable
 import SnapKit
 import UIKit
@@ -12,13 +13,13 @@ import UIKit
 final class MessageCell: UITableViewCell, Reusable {
     private enum Config {
         static let messageLabelInset: CGFloat = 10
-        static let messageContainerMinWidth: CGFloat = 50
-        static let messageContainerMinHeight: CGFloat = 40
+        static let messageContainerMinWidth: CGFloat = 75
+        static let messageContainerMinHeight: CGFloat = 50
     }
     private let hostImageView: GlassImageView = GlassImageView()
     private let messageContainer: UIVisualEffectView = UIVisualEffectView()
     private let messageLabel: UILabel = UILabel()
-    private let loadingImage: UIImageView = UIImageView()
+    private lazy var loadingView: LottieAnimationView = createLottieView()
     
     // Animation
     private var loadingTimer: Timer?
@@ -33,6 +34,21 @@ final class MessageCell: UITableViewCell, Reusable {
     override func prepareForReuse() {
         stopLoadingAnimation()
         messageLabel.text = nil
+    }
+    
+    func configure(using model: MessageModel) {
+        updateLayout(for: model.direction)
+
+        switch model.mode {
+        case .message(let string):
+            setLoadingView(isPresent: false)
+            stopLoadingAnimation()
+            messageLabel.text = string
+        case .typing:
+            setLoadingView(isPresent: true)
+            startLoadingAnimation()
+            messageLabel.text = ""
+        }
     }
     
     private func attribute() {
@@ -59,9 +75,8 @@ final class MessageCell: UITableViewCell, Reusable {
         messageLabel.numberOfLines = 0
         messageContainer.contentView.addSubview(messageLabel)
         
-        loadingImage.image = UIImage(systemName: "hourglass")
-        loadingImage.tintColor = .white
-        messageContainer.contentView.addSubview(loadingImage)
+        loadingView.contentMode = .scaleAspectFit
+        messageContainer.contentView.addSubview(loadingView)
     }
     
     private func layout() {
@@ -80,38 +95,33 @@ final class MessageCell: UITableViewCell, Reusable {
             make.width.greaterThanOrEqualTo(Config.messageContainerMinWidth)
         }
         
+        messageContainer.contentView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
         messageLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(Config.messageLabelInset)
             make.verticalEdges.equalToSuperview().inset(Config.messageLabelInset)
         }
         
-        loadingImage.snp.makeConstraints { make in
+        loadingView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalTo(20)
+            make.height.equalTo(Config.messageContainerMinHeight - 3 * 2)
         }
+    }
+    
+    private func setLoadingView(isPresent: Bool) {
+        loadingView.isHidden = !isPresent
     }
     
     private func startLoadingAnimation() {
-        loadingImage.addSymbolEffect(.rotate, options: .repeat(.periodic))
+        loadingView.loopMode = .loop
+        loadingView.animationSpeed = 1
+        loadingView.play()
     }
     
     private func stopLoadingAnimation() {
-        loadingImage.removeAllSymbolEffects()
-    }
-    
-    func configure(using model: MessageModel) {
-        updateLayout(for: model.direction)
-
-        switch model.mode {
-        case .message(let string):
-            loadingImage.isHidden = true
-            stopLoadingAnimation()
-            messageLabel.text = string
-        case .typing:
-            loadingImage.isHidden = false
-            startLoadingAnimation()
-            messageLabel.text = ""
-        }
+        loadingView.stop()
     }
 
     private func updateLayout(for direction: MessageDirection) {
@@ -151,6 +161,12 @@ final class MessageCell: UITableViewCell, Reusable {
                 make.bottom.equalToSuperview()
             }
         }
+    }
+    
+    private func createLottieView() -> LottieAnimationView {
+        guard let path = Bundle.main.path(forResource: "Thinking", ofType: "json") else { fatalError() }
+        let lottieView = LottieAnimationView(filePath: path)
+        return lottieView
     }
 }
 
