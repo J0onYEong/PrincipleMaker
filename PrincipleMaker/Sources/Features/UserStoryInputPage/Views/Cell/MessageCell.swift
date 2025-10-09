@@ -14,7 +14,6 @@ final class MessageCell: UITableViewCell, Reusable {
     private enum Config {
         static let cellTopPadding: CGFloat = 15
         static let messageLabelInset: CGFloat = 10
-        static let messageContainerMinWidth: CGFloat = 75
         static let messageContainerMinHeight: CGFloat = 50
     }
     
@@ -111,7 +110,6 @@ final class MessageCell: UITableViewCell, Reusable {
             make.right.lessThanOrEqualTo(realContentView.snp.right).inset(20)
             make.bottom.equalToSuperview()
             make.height.greaterThanOrEqualTo(Config.messageContainerMinHeight)
-            make.width.greaterThanOrEqualTo(Config.messageContainerMinWidth)
         }
         
         messageContainer.contentView.snp.makeConstraints { make in
@@ -119,18 +117,24 @@ final class MessageCell: UITableViewCell, Reusable {
         }
         
         messageLabel.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(Config.messageLabelInset)
-            make.verticalEdges.equalToSuperview().inset(Config.messageLabelInset)
+            make.edges.equalToSuperview().inset(Config.messageLabelInset)
         }
         
         loadingView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.height.equalTo(Config.messageContainerMinHeight - Config.messageLabelInset)
+            make.height.width.equalTo(Config.messageContainerMinHeight - Config.messageLabelInset)
+            make.edges.equalToSuperview().inset(Config.messageLabelInset)
         }
     }
     
     private func setLoadingView(isPresent: Bool) {
         loadingView.isHidden = !isPresent
+        loadingView.snp.removeConstraints()
+        if isPresent {
+            loadingView.snp.makeConstraints { make in
+                make.height.width.equalTo(Config.messageContainerMinHeight - Config.messageLabelInset)
+                make.edges.equalToSuperview().inset(Config.messageLabelInset)
+            }
+        }
     }
     
     private func startLoadingAnimation() {
@@ -163,7 +167,6 @@ final class MessageCell: UITableViewCell, Reusable {
                 make.left.equalTo(hostImageView.snp.right).offset(5)
                 make.right.lessThanOrEqualTo(realContentView.snp.right).inset(20)
                 make.height.greaterThanOrEqualTo(Config.messageContainerMinHeight)
-                make.width.greaterThanOrEqualTo(Config.messageContainerMinWidth)
                 make.bottom.equalToSuperview()
             }
         case .right:
@@ -180,7 +183,6 @@ final class MessageCell: UITableViewCell, Reusable {
                 make.right.equalTo(hostImageView.snp.left).offset(-5)
                 make.left.greaterThanOrEqualTo(realContentView.snp.left).inset(20)
                 make.height.greaterThanOrEqualTo(Config.messageContainerMinHeight)
-                make.width.greaterThanOrEqualTo(Config.messageContainerMinWidth)
                 make.bottom.equalToSuperview()
             }
         }
