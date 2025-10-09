@@ -20,9 +20,7 @@ final class GlassImageView: UIVisualEffectView {
     }
     
     var radius: CGFloat = 15.0 {
-        didSet {
-            self.cornerConfiguration = .corners(radius: .fixed(radius))
-        }
+        didSet { cornerConfiguration = .corners(radius: .fixed(radius)) }
     }
     
     var imageSize: CGSize = .init(width: 20, height: 20) {
@@ -38,8 +36,15 @@ final class GlassImageView: UIVisualEffectView {
         didSet { imageView.tintColor = imageColor }
     }
     
-    init(image: UIImage) {
-        self.imageView.image = image
+    var image: UIImage? = nil {
+        didSet { imageView.image = image }
+    }
+    
+    override var contentMode: UIView.ContentMode {
+        didSet { imageView.contentMode = contentMode }
+    }
+    
+    init() {
         super.init(effect: UIGlassEffect(style: .regular))
         setup()
     }
@@ -57,11 +62,4 @@ final class GlassImageView: UIVisualEffectView {
             make.edges.equalToSuperview().inset(inset)
         }
     }
-}
-
-#Preview(traits: .defaultLayout) {
-    let view = GlassImageView(
-        image: .init(systemName: "globe.central.south.asia.fill")!
-    )
-    return view
 }

@@ -15,8 +15,8 @@ final class MessageCell: UITableViewCell, Reusable {
         static let messageContainerMinWidth: CGFloat = 50
         static let messageContainerMinHeight: CGFloat = 40
     }
-    private let hostImageView: UIImageView = UIImageView()
-    private let messageContainer: UIView = UIView()
+    private let hostImageView: GlassImageView = GlassImageView()
+    private let messageContainer: UIVisualEffectView = UIVisualEffectView()
     private let messageLabel: UILabel = UILabel()
     private let loadingImage: UIImageView = UIImageView()
     
@@ -42,29 +42,32 @@ final class MessageCell: UITableViewCell, Reusable {
         
         hostImageView.image = UIImage(systemName: "person.circle")
         hostImageView.contentMode = .scaleAspectFit
-        hostImageView.tintColor = .systemGreen
-        hostImageView.layer.cornerRadius = 10
+        hostImageView.imageColor = .systemGreen
+        hostImageView.radius = 10
+        hostImageView.inset = 5
+        hostImageView.imageSize = .init(width: 30, height: 30)
         contentView.addSubview(hostImageView)
         
-        messageContainer.layer.cornerRadius = 10
-        messageContainer.backgroundColor = .lightGray
+        messageContainer.cornerConfiguration = UICornerConfiguration.corners(radius: .fixed(10))
+        let glassEffect = UIGlassEffect(style: .regular)
+        glassEffect.tintColor = .lightGray.withAlphaComponent(0.3)
+        messageContainer.effect = glassEffect
         contentView.addSubview(messageContainer)
         
         messageLabel.font = .systemFont(ofSize: 17)
         messageLabel.textColor = .black
         messageLabel.numberOfLines = 0
-        messageContainer.addSubview(messageLabel)
+        messageContainer.contentView.addSubview(messageLabel)
         
         loadingImage.image = UIImage(systemName: "hourglass")
         loadingImage.tintColor = .white
-        messageContainer.addSubview(loadingImage)
+        messageContainer.contentView.addSubview(loadingImage)
     }
     
     private func layout() {
         hostImageView.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.left.equalToSuperview()
-            make.width.height.equalTo(30)
         }
         
         messageContainer.snp.makeConstraints { make in
@@ -120,7 +123,6 @@ final class MessageCell: UITableViewCell, Reusable {
             hostImageView.snp.makeConstraints { make in
                 make.top.equalToSuperview()
                 make.left.equalToSuperview()
-                make.width.height.equalTo(30)
             }
 
             messageContainer.snp.makeConstraints { make in
@@ -138,7 +140,6 @@ final class MessageCell: UITableViewCell, Reusable {
             hostImageView.snp.makeConstraints { make in
                 make.top.equalToSuperview()
                 make.right.equalToSuperview()
-                make.width.height.equalTo(30)
             }
 
             messageContainer.snp.makeConstraints { make in
