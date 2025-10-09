@@ -188,10 +188,6 @@ final class UserStoryInputViewController: BaseViewController {
     }
 }
 
-#Preview(traits: .defaultLayout) {
-    UserStoryInputViewController()
-}
-
 extension UserStoryInputViewController: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         guard gestureRecognizer === dismissKeyboardTapRecognizer else { return true }
@@ -199,4 +195,8 @@ extension UserStoryInputViewController: UIGestureRecognizerDelegate {
         let textFieldFrameInView = userStoryTextField.convert(userStoryTextField.bounds, to: view)
         return textFieldFrameInView.contains(location) == false
     }
+}
+
+#Preview(traits: .defaultLayout) {
+    UserStoryInputViewController()
 }
