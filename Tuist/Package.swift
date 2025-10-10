@@ -14,5 +14,11 @@ import PackageDescription
 
 let package = Package(
     name: "PrincipleMaker",
-    dependencies: []
+    dependencies: [
+        .package(url: "https://github.com/CombineCommunity/CombineCocoa.git", exact: "0.4.1"),
+        .package(url: "https://github.com/SnapKit/SnapKit.git", exact: "5.7.1"),
+        .package(url: "https://github.com/AliSoftware/Reusable.git", exact: "4.1.2"),
+        .package(url: "https://github.com/Swinject/Swinject.git", exact: "2.8.4"),
+        .package(url: "https://github.com/airbnb/lottie-spm.git", exact: "4.5.2"),
+    ]
 )
