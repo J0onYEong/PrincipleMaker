@@ -47,7 +47,7 @@ final class UserStoryInputViewController: BaseViewController {
             .unretained(self)
             .sink { vc, models in
                 vc.applyMessageSnapshot(with: models, animatingDifferences: true)
-                vc.adjustScrollOffsetWhenCellDataChanged()
+                vc.adjustScrollOffsetWhenCellDataChanged(animated: true)
             }
             .store(in: &store)
         
@@ -151,6 +151,7 @@ final class UserStoryInputViewController: BaseViewController {
                 make.bottom.equalTo(view.safeAreaLayoutGuide).inset(inset)
             }
             view.layoutIfNeeded()
+            adjustScrollOffsetWhenCellDataChanged()
         }
     }
     
@@ -169,7 +170,7 @@ final class UserStoryInputViewController: BaseViewController {
         messageDataSource.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     
-    private func adjustScrollOffsetWhenCellDataChanged() {
+    private func adjustScrollOffsetWhenCellDataChanged(animated: Bool = false) {
         messageTableView.layoutIfNeeded()
         let contentHeight = messageTableView.contentSize.height
         let tableViewHeight = messageTableView.bounds.height
@@ -177,7 +178,7 @@ final class UserStoryInputViewController: BaseViewController {
             let scrollYOffset = contentHeight - tableViewHeight
             messageTableView.setContentOffset(
                 CGPoint(x: 0, y: scrollYOffset),
-                animated: true
+                animated: animated
             )
         }
     }
