@@ -30,6 +30,7 @@ final class UserStoryInputViewModel: Sendable {
     }
     
     // Internal states
+    private var userMessages: [String] = []
     private var messageBufferForReply: [String] = []
     private var readyToCompleteDialog: Bool = false
     
@@ -73,12 +74,15 @@ extension UserStoryInputViewModel {
                 return
             }
             
+            // 모든 유저 메세지 저장
+            userMessages.append(userStoryText)
+            
             // 메세지 셀 추가
             let messageModel = MessageCellModel(direction: .right, mode: .message(userStoryText))
-            self._messageCellModels.append(messageModel)
+            _messageCellModels.append(messageModel)
             
             // 다음 대화 생성을 위한 메세지 저장
-            self.messageBufferForReply.append(userStoryText)
+            messageBufferForReply.append(userStoryText)
             messageSubmitPublisher.send(())
             
             // 키보드 플레이홀더 변경
