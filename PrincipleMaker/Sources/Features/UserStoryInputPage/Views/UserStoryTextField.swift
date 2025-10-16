@@ -65,6 +65,10 @@ final class UserStoryTextField: UIView {
             .store(in: &store)
     }
     
+    func set(placeHolderText: String) {
+        textView.placeholder = placeHolderText
+    }
+    
     private func attribute() {
         addSubview(visualEffectView)
         

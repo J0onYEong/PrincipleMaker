@@ -10,6 +10,11 @@ import Foundation
 
 @MainActor
 final class UserStoryInputViewModel: Sendable {
+    private enum DialogConfig {
+        static let dialogCompleteWord: String = "완료"
+        static let minimumMessageCountForCompleteDialog: Int = 3
+    }
+    
     // Dependency
     @Injected private var userStoryDialogProvider: UserStoryDialogProvider
     
@@ -17,14 +22,23 @@ final class UserStoryInputViewModel: Sendable {
     var messageCellModels: AnyPublisher<[MessageCellModel], Never> {
         $_messageCellModels.eraseToAnyPublisher()
     }
+    var keyBoardPlaceHolderText: AnyPublisher<String, Never> {
+        $_keyboardPlaceHolderText.eraseToAnyPublisher()
+    }
+    var alertToPresent: AnyPublisher<AlertModel, Never> {
+        alertSubject.eraseToAnyPublisher()
+    }
     
     // Internal states
-    @Published private var _messageCellModels: [MessageCellModel] = []
-    @Published private var _userStoryText: String = ""
     private var messageBufferForReply: [String] = []
+    private var readyToCompleteDialog: Bool = false
     
     // Internal publishers
+    @Published private var _messageCellModels: [MessageCellModel] = []
+    @Published private var _userStoryText: String = ""
+    @Published private var _keyboardPlaceHolderText: String = ""
     private let messageSubmitPublisher = PassthroughSubject<Void, Never>()
+    private let alertSubject = PassthroughSubject<AlertModel, Never>()
     private var store: Set<AnyCancellable> = []
     
     init() {}
@@ -42,6 +56,7 @@ extension UserStoryInputViewModel {
         case .viewDidLoad:
             bindUserInteractionPublishers()
             fetchNextReply(for: nil)
+            _keyboardPlaceHolderText = "오늘의 첫 번째 채팅은 무엇인가요?"
             
         case let .userStoryTextChanged(text):
             self._userStoryText = text
@@ -49,14 +64,31 @@ extension UserStoryInputViewModel {
         case .userStoryTextSubmitButtonTapped:
             guard _userStoryText.isEmpty == false else { return }
             
-            // 메세지 셀 추가
             let userStoryText = _userStoryText
+            
+            // 대화종료 여부 확인하기
+            if readyToCompleteDialog, userStoryText == DialogConfig.dialogCompleteWord {
+                presentCompletionAlert()
+                _userStoryText = ""
+                return
+            }
+            
+            // 메세지 셀 추가
             let messageModel = MessageCellModel(direction: .right, mode: .message(userStoryText))
             self._messageCellModels.append(messageModel)
             
             // 다음 대화 생성을 위한 메세지 저장
             self.messageBufferForReply.append(userStoryText)
             messageSubmitPublisher.send(())
+            
+            // 키보드 플레이홀더 변경
+            let userMessagesCount = _messageCellModels.count(where: { $0.direction == .right })
+                if userMessagesCount >= DialogConfig.minimumMessageCountForCompleteDialog {
+                // 유저가 입력한 대답이 3가지 이상인 경우
+                _keyboardPlaceHolderText = "\"완료\"를 입력해 대화를 종료하세요!"
+                readyToCompleteDialog = true
+            }
+            _userStoryText = ""
         }
     }
 }
@@ -101,5 +133,22 @@ extension UserStoryInputViewModel {
                 self._messageCellModels = currentModels
             }
         }
+    }
+}
+
+extension UserStoryInputViewModel {
+    private func presentCompletionAlert() {
+        let alertModel = AlertModel(
+            title: "대화를 종료할까요?",
+            message: "작성한 내용을 바탕으로 오늘의 기록을 마무리합니다.",
+            actions: [
+                .init(title: "취소", style: .cancel),
+                .init(title: "완료", style: .default) { [weak self] in
+                    guard let self else { return }
+                    print("완료")
+                },
+            ]
+        )
+        alertSubject.send(alertModel)
     }
 }

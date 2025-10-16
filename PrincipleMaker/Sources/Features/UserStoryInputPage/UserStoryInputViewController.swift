@@ -44,6 +44,9 @@ final class UserStoryInputViewController: BaseViewController {
         // Outputs
         viewModel
             .messageCellModels
+            .combineLatest(lifeCyclePublisher.viewDidAppear)
+            .map(\.0)
+            .removeDuplicates()
             .unretained(self)
             .sink { vc, models in
                 vc.applyMessageSnapshot(with: models, animatingDifferences: true)
@@ -51,16 +54,28 @@ final class UserStoryInputViewController: BaseViewController {
             }
             .store(in: &store)
         
+        viewModel
+            .alertToPresent
+            .unretained(self)
+            .sink { vc, alertModel in
+                vc.presentAlert(using: alertModel)
+            }
+            .store(in: &store)
+        
+        viewModel
+            .keyBoardPlaceHolderText
+            .unretained(self)
+            .sink { vc, placeHolderText in
+                vc.userStoryTextField.set(placeHolderText: placeHolderText)
+            }
+            .store(in: &store)
+        
+        
         // Inputs
-        lifeCyclePublisher
+        lifeCyclePublisher.viewDidLoad
             .unretained(viewModel)
-            .sink { vm, lifeCycleEvent in
-                switch lifeCycleEvent {
-                case .viewDidLoad:
-                    vm.send(input: .viewDidLoad)
-                default:
-                    break
-                }
+            .sink { vm, _ in
+                vm.send(input: .viewDidLoad)
             }
             .store(in: &store)
         
@@ -163,15 +178,22 @@ final class UserStoryInputViewController: BaseViewController {
         }
     }
     
-    private func applyMessageSnapshot(with messages: [MessageCellModel], animatingDifferences: Bool = true) {
+    private func applyMessageSnapshot(
+        with messages: [MessageCellModel],
+        animatingDifferences: Bool = true,
+        completion: (() -> Void)? = nil) {
         var snapshot = MessageSnapshot()
         snapshot.appendSections([0])
         snapshot.appendItems(messages, toSection: 0)
-        messageDataSource.apply(snapshot, animatingDifferences: animatingDifferences)
+        messageDataSource.apply(
+            snapshot,
+            animatingDifferences: animatingDifferences,
+            completion: completion
+        )
     }
     
     private func adjustScrollOffsetWhenCellDataChanged(animated: Bool = false) {
-        messageTableView.layoutIfNeeded()
+        view.layoutIfNeeded()
         let contentHeight = messageTableView.contentSize.height
         let tableViewHeight = messageTableView.bounds.height
         if contentHeight > tableViewHeight {
@@ -187,6 +209,24 @@ final class UserStoryInputViewController: BaseViewController {
     private func onBackgroundTapped() {
         userStoryTextField.resignFirstResponder()
     }
+    
+    private func presentAlert(using model: AlertModel) {
+        guard presentedViewController == nil else { return }
+        let alertController = UIAlertController(
+            title: model.title,
+            message: model.message,
+            preferredStyle: .alert
+        )
+        model.actions.forEach { action in
+            let alertAction = UIAlertAction(
+                title: action.title,
+                style: action.style,
+                handler: { _ in action.completion?() }
+            )
+            alertController.addAction(alertAction)
+        }
+        present(alertController, animated: true)
+    }
 }
 
 extension UserStoryInputViewController: UIGestureRecognizerDelegate {
@@ -198,6 +238,8 @@ extension UserStoryInputViewController: UIGestureRecognizerDelegate {
     }
 }
 
-#Preview(traits: .defaultLayout) {
-    UserStoryInputViewController()
+extension UserStoryInputViewController {
+    #Preview(traits: .defaultLayout) {
+        UserStoryInputViewController()
+    }
 }
