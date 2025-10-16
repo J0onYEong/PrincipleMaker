@@ -21,7 +21,7 @@ final class UserStoryInputViewModel: Sendable {
     // Internal states
     @Published private var _messageCellModels: [MessageCellModel] = []
     @Published private var _userStoryText: String = ""
-    private var messageBufferForNextConversation: [String] = []
+    private var messageBufferForReply: [String] = []
     
     // Internal publishers
     private let messageSubmitPublisher = PassthroughSubject<Void, Never>()
@@ -41,7 +41,7 @@ extension UserStoryInputViewModel {
         switch input {
         case .viewDidLoad:
             bindUserInteractionPublishers()
-            excuteNextDialogProcress()
+            fetchNextReply(for: nil)
             
         case let .userStoryTextChanged(text):
             self._userStoryText = text
@@ -55,7 +55,7 @@ extension UserStoryInputViewModel {
             self._messageCellModels.append(messageModel)
             
             // 다음 대화 생성을 위한 메세지 저장
-            self.messageBufferForNextConversation.append(userStoryText)
+            self.messageBufferForReply.append(userStoryText)
             messageSubmitPublisher.send(())
         }
     }
@@ -68,14 +68,14 @@ extension UserStoryInputViewModel {
             .receive(on: DispatchQueue.main)
             .unretained(self)
             .sink { vm in
-                let accumulatedMessage = vm.messageBufferForNextConversation.joined(separator: "\n")
-                vm.excuteNextDialogProcress(reply: accumulatedMessage)
-                vm.messageBufferForNextConversation.removeAll()
+                let messages = vm.messageBufferForReply.joined(separator: "\n")
+                vm.messageBufferForReply.removeAll()
+                vm.fetchNextReply(for: messages)
             }
             .store(in: &store)
     }
     
-    private func excuteNextDialogProcress(reply: String? = nil) {
+    private func fetchNextReply(for message: String? = nil) {
         let loadingModel = MessageCellModel(
             direction: .left,
             mode: .typing
@@ -86,7 +86,7 @@ extension UserStoryInputViewModel {
             guard let self else { return }
             let nextMessage: String
             do {
-                let message = try await userStoryDialogProvider.requestDialog(reply: reply)
+                let message = try await userStoryDialogProvider.requestReply(for: message)
                 nextMessage = message
             } catch {
                 nextMessage = "오류가 발생했습니다.\n\(error.localizedDescription)"

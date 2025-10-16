@@ -8,8 +8,8 @@
 import Foundation
 
 protocol UserStoryDialogProvider: Sendable {
-    // 답장(reply)을 기반으로 새로운 대화를 생성합니다, 답장이 없는 경우 시작말을 반환합니다.
-    func requestDialog(reply: String?) async throws -> String
+    // 메세지를 기반으로 새로운 대화를 생성합니다, 답장이 없는 경우 시작말을 반환합니다.
+    func requestReply(for message: String?) async throws -> String
 }
 
 final class DefaultUserStoryDialogProvider: UserStoryDialogProvider {
@@ -27,10 +27,10 @@ final class DefaultUserStoryDialogProvider: UserStoryDialogProvider {
         basePrompter.initialize(instructions: sessionInstructions)
     }
     
-    func requestDialog(reply: String?) async throws -> String {
+    func requestReply(for message: String?) async throws -> String {
         let prompt: String
-        if let reply {
-            prompt = "Create replay for user reply: \(reply)"
+        if let message {
+            prompt = "Create replay for user reply: \(message)"
         } else {
             prompt = "Create first setence for new user story."
         }
