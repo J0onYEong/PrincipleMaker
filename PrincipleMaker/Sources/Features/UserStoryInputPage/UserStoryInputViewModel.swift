@@ -56,7 +56,7 @@ extension UserStoryInputViewModel {
         case .viewDidLoad:
             bindUserInteractionPublishers()
             fetchNextReply(for: nil)
-            _keyboardPlaceHolderText = "오늘의 첫 번째 채팅은 무엇인가요?"
+            _keyboardPlaceHolderText = "오늘은 어떤 일이 있었나요?"
             
         case let .userStoryTextChanged(text):
             self._userStoryText = text
