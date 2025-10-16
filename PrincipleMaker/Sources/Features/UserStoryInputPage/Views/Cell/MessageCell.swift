@@ -39,7 +39,7 @@ final class MessageCell: UITableViewCell, Reusable {
         messageLabel.text = nil
     }
     
-    func configure(using model: MessageModel, isFirstCell: Bool) {
+    func configure(using model: MessageCellModel, isFirstCell: Bool) {
         updateTopPadding(isFirstCell: isFirstCell)
         updateLayout(for: model.direction)
         
@@ -198,7 +198,7 @@ final class MessageCell: UITableViewCell, Reusable {
 
 #Preview("Left 메세지", traits: .defaultLayout) {
     let view = MessageCell()
-    let state = MessageModel(
+    let state = MessageCellModel(
         direction: .left,
         mode: .message("HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello")
     )
@@ -208,7 +208,7 @@ final class MessageCell: UITableViewCell, Reusable {
 
 #Preview("Right 로딩중", traits: .defaultLayout) {
     let view = MessageCell()
-    let state = MessageModel(
+    let state = MessageCellModel(
         direction: .right,
         mode: .typing
     )

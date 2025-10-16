@@ -12,8 +12,8 @@ import SwiftUI
 
 @MainActor
 final class UserStoryInputViewController: BaseViewController {
-    private typealias MessageDataSource = UITableViewDiffableDataSource<Int, MessageModel>
-    private typealias MessageSnapshot = NSDiffableDataSourceSnapshot<Int, MessageModel>
+    private typealias MessageDataSource = UITableViewDiffableDataSource<Int, MessageCellModel>
+    private typealias MessageSnapshot = NSDiffableDataSourceSnapshot<Int, MessageCellModel>
     
     private var viewModel: UserStoryInputViewModel!
     private var store: Set<AnyCancellable> = []
@@ -43,7 +43,7 @@ final class UserStoryInputViewController: BaseViewController {
         
         // Outputs
         viewModel
-            .messageModels
+            .messageCellModels
             .unretained(self)
             .sink { vc, models in
                 vc.applyMessageSnapshot(with: models, animatingDifferences: true)
@@ -163,7 +163,7 @@ final class UserStoryInputViewController: BaseViewController {
         }
     }
     
-    private func applyMessageSnapshot(with messages: [MessageModel], animatingDifferences: Bool = true) {
+    private func applyMessageSnapshot(with messages: [MessageCellModel], animatingDifferences: Bool = true) {
         var snapshot = MessageSnapshot()
         snapshot.appendSections([0])
         snapshot.appendItems(messages, toSection: 0)

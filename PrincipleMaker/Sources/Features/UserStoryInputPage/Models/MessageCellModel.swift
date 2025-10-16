@@ -16,7 +16,7 @@ enum MessageMode: Hashable {
     case typing
 }
 
-struct MessageModel: Identifiable, Hashable {
+struct MessageCellModel: Identifiable, Hashable {
     let id: String = UUID().uuidString
     let direction: MessageDirection
     var mode: MessageMode

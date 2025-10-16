@@ -14,14 +14,14 @@ final class UserStoryInputViewModel: Sendable {
     @Injected private var userStoryDialogProvider: UserStoryDialogProvider
     
     // Outputs
-    var messageModels: AnyPublisher<[MessageModel], Never> {
-        $_messageModels.eraseToAnyPublisher()
+    var messageCellModels: AnyPublisher<[MessageCellModel], Never> {
+        $_messageCellModels.eraseToAnyPublisher()
     }
     
     // Internal states
-    @Published private var _messageModels: [MessageModel] = []
+    @Published private var _messageCellModels: [MessageCellModel] = []
     @Published private var _userStoryText: String = ""
-    private var messageBuffer: [String] = []
+    private var messageBufferForNextConversation: [String] = []
     
     // Internal publishers
     private let messageSubmitPublisher = PassthroughSubject<Void, Never>()
@@ -48,15 +48,14 @@ extension UserStoryInputViewModel {
             
         case .userStoryTextSubmitButtonTapped:
             guard _userStoryText.isEmpty == false else { return }
+            
+            // 메세지 셀 추가
             let userStoryText = _userStoryText
-            let messageModel = MessageModel(
-                direction: .right,
-                mode: .message(userStoryText)
-            )
-            var currentMessages = _messageModels
-            currentMessages.append(messageModel)
-            self._messageModels = currentMessages
-            self.messageBuffer.append(userStoryText)
+            let messageModel = MessageCellModel(direction: .right, mode: .message(userStoryText))
+            self._messageCellModels.append(messageModel)
+            
+            // 다음 대화 생성을 위한 메세지 저장
+            self.messageBufferForNextConversation.append(userStoryText)
             messageSubmitPublisher.send(())
         }
     }
@@ -69,19 +68,19 @@ extension UserStoryInputViewModel {
             .receive(on: DispatchQueue.main)
             .unretained(self)
             .sink { vm in
-                let accumulatedMessage = vm.messageBuffer.joined(separator: "\n")
+                let accumulatedMessage = vm.messageBufferForNextConversation.joined(separator: "\n")
                 vm.excuteNextDialogProcress(reply: accumulatedMessage)
-                vm.messageBuffer.removeAll()
+                vm.messageBufferForNextConversation.removeAll()
             }
             .store(in: &store)
     }
     
     private func excuteNextDialogProcress(reply: String? = nil) {
-        let loadingModel = MessageModel(
+        let loadingModel = MessageCellModel(
             direction: .left,
             mode: .typing
         )
-        self._messageModels.append(loadingModel)
+        self._messageCellModels.append(loadingModel)
         
         Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
@@ -95,11 +94,11 @@ extension UserStoryInputViewModel {
             await MainActor.run { [weak self] in
                 guard
                     let self,
-                    let loadingMessageIndex = _messageModels.firstIndex(where: { $0.id == loadingModel.id })
+                    let loadingMessageIndex = _messageCellModels.firstIndex(where: { $0.id == loadingModel.id })
                 else { return }
-                var currentModels = _messageModels
+                var currentModels = _messageCellModels
                 currentModels[loadingMessageIndex].mode = .message(nextMessage)
-                self._messageModels = currentModels
+                self._messageCellModels = currentModels
             }
         }
     }
