@@ -23,6 +23,7 @@ let project = Project(
                 .external(name: "Reusable"),
                 .external(name: "Swinject"),
                 .external(name: "Lottie"),
+                .external(name: "Then"),
             ],
             settings: .settings(
                 base: [

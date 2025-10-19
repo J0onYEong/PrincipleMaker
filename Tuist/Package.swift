@@ -20,5 +20,6 @@ let package = Package(
         .package(url: "https://github.com/AliSoftware/Reusable.git", exact: "4.1.2"),
         .package(url: "https://github.com/Swinject/Swinject.git", exact: "2.8.4"),
         .package(url: "https://github.com/airbnb/lottie-spm.git", exact: "4.5.2"),
+        .package(url: "https://github.com/devxoul/Then.git", exact: "3.0.0"),
     ]
 )

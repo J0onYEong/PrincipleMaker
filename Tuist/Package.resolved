@@ -1,5 +1,5 @@
 {
-  "originHash" : "080c548b0e60b8c2578dd556026a166acaa0b8ef0db0afa8a3efe08042d02555",
+  "originHash" : "672fd18cb01249856264a9270c4468545da5d42e06d4034741898b3942b0a813",
   "pins" : [
     {
       "identity" : "combinecocoa",
@@ -44,6 +44,15 @@
       "state" : {
         "revision" : "463cb2d659c8ae34899d18057ea5b1bb86fc3178",
         "version" : "2.8.4"
+      }
+    },
+    {
+      "identity" : "then",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/devxoul/Then.git",
+      "state" : {
+        "revision" : "d41ef523faef0f911369f79c0b96815d9dbb6d7a",
+        "version" : "3.0.0"
       }
     }
   ],
