@@ -5,6 +5,7 @@
 //  Created by choijunios on 10/7/25.
 //
 
+import Then
 import Lottie
 import Reusable
 import SnapKit
@@ -74,9 +75,9 @@ final class MessageCell: UITableViewCell, Reusable {
         realContentView.addSubview(hostImageView)
         
         messageContainer.cornerConfiguration = .corners(radius: .fixed(10))
-        let glassEffect = UIGlassEffect(style: .regular)
-        glassEffect.tintColor = .lightGray.withAlphaComponent(0.3)
-        messageContainer.effect = glassEffect
+        messageContainer.effect = UIGlassEffect(style: .regular).then {
+            $0.tintColor = UIColor.lightGray.withAlphaComponent(0.3)
+        }
         realContentView.addSubview(messageContainer)
         
         messageLabel.font = .systemFont(ofSize: 17)
