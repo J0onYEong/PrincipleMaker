@@ -24,12 +24,22 @@ final class EventCell: UITableViewCell, Reusable {
     required init?(coder: NSCoder) { nil }
     
     private func attribute() {
+        selectionStyle = .none
+        backgroundColor = .clear
+        contentView.backgroundColor = .clear
+        
         mainContainer.cornerConfiguration = .corners(radius: .fixed(10))
         mainContainer.effect = UIGlassEffect(style: .regular).then {
             $0.tintColor = UIColor.lightGray.withAlphaComponent(0.3)
         }
         
         textView.isUserInteractionEnabled = false
+        textView.isScrollEnabled = false
+        textView.backgroundColor = .clear
+        textView.textContainerInset = .zero
+        textView.textContainer.lineFragmentPadding = 0
+        textView.font = .preferredFont(forTextStyle: .body)
+        textView.textColor = .label
         
         editButton.configuration = .glass()
         editButton.configuration?.image = UIImage(systemName: "square.and.pencil")
@@ -57,5 +67,14 @@ final class EventCell: UITableViewCell, Reusable {
         editButton.snp.makeConstraints { make in
             make.width.height.equalTo(40)
         }
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        textView.text = nil
+    }
+    
+    func configure(using item: EventItem) {
+        textView.text = item.description
     }
 }

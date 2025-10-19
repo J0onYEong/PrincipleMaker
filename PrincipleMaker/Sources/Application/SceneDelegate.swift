@@ -9,8 +9,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
-        let viewController = UserStoryInputViewController()
-        viewController.bind(viewModel: UserStoryInputViewModel())
+        let viewController = DailyEventsViewController()
+        viewController.bind(viewModel: DailyEventsViewModel())
         
         window.rootViewController = UINavigationController(
             rootViewController: viewController

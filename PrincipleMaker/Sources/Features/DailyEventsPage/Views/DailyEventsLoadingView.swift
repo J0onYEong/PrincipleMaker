@@ -19,12 +19,30 @@ final class DailyEventsLoadingView: UIView {
     private let skeletonStackView = UIStackView()
     private var skeletonViews: [SkeletonView] = []
     
+    // Internal state
+    private(set) var isAnimating: Bool = false
+    private var prevBoundSize: CGSize = .zero
+    
     init() {
         super.init(frame: .zero)
         attribute()
-        setupSkeleltonViews()
+        layout()
     }
     required init?(coder: NSCoder) { nil }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        if prevBoundSize != bounds.size {
+            self.prevBoundSize = bounds.size
+            
+            let isPrevAnimating = isAnimating
+            setupSkeleltonViews()
+            if isPrevAnimating {
+                startSkeletonAnimation()
+            }
+        }
+    }
     
     private func attribute() {
         label.font = .systemFont(ofSize: 17)
@@ -48,9 +66,13 @@ final class DailyEventsLoadingView: UIView {
     }
     
     private func setupSkeleltonViews() {
-        guard let screenHeight = window?.windowScene?.screen.bounds.height else { return }
-        let safeAreaHeight: CGFloat = screenHeight - (safeAreaInsets.top + safeAreaInsets.bottom)
-        let countOfHeight = Int(safeAreaHeight / (Config.skeletonHeight + Config.spacing))
+        self.skeletonViews.forEach {
+            $0.removeFromSuperview()
+        }
+        self.skeletonViews.removeAll()
+        self.isAnimating = false
+        
+        let countOfHeight = Int(bounds.height / (Config.skeletonHeight + Config.spacing))
         self.skeletonViews = (0..<countOfHeight).map { _ in
             let view = SkeletonView()
             skeletonStackView.addArrangedSubview(view)
@@ -61,6 +83,7 @@ final class DailyEventsLoadingView: UIView {
     }
     
     func startSkeletonAnimation() {
+        isAnimating = true
         Task { @MainActor in
             for view in skeletonViews {
                 view.startAnimation()
@@ -70,6 +93,7 @@ final class DailyEventsLoadingView: UIView {
     }
     
     func stopSkeletonAnimation() {
+        isAnimating = false
         for view in skeletonViews {
             view.stopAnimation()
         }
