@@ -6,5 +6,7 @@
 //
 
 enum PMSessionError: Error {
-    case sessionIsNotAvailable
+    case sessionIsNotExist
+    case sessionIsResponding
+    case underlyingError(Error)
 }

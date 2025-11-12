@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import FoundationModels
 
 protocol UserStoryDialogProvider: Sendable {
     // 메세지를 기반으로 새로운 대화를 생성합니다, 답장이 없는 경우 시작말을 반환합니다.
@@ -14,6 +15,8 @@ protocol UserStoryDialogProvider: Sendable {
 
 final class DefaultUserStoryDialogProvider: UserStoryDialogProvider {
     private let basePrompter: BasePrompter = BasePrompter()
+    
+    private let messageHistory: MessageHistory = .init()
     
     init() {
         setupPrompter()
@@ -34,7 +37,41 @@ final class DefaultUserStoryDialogProvider: UserStoryDialogProvider {
         } else {
             prompt = "Create first setence for new user story."
         }
-        let response: MessageReply = try await basePrompter.request(withPrompt: prompt)
-        return response.contents
+        do {
+            let response: MessageReply = try await basePrompter.request(withPrompt: prompt)
+            if let message { await messageHistory.append(message) }
+            return response.contents
+        } catch {
+            if let err = error as? PMSessionError {
+                switch err {
+                case .sessionIsNotExist:
+                    setupPrompter()
+                    return try await requestReply(for: message)
+                    
+                case .sessionIsResponding:
+                    try? await Task.sleep(for: .seconds(1))
+                    return try await requestReply(for: message)
+                    
+                default:
+                    throw err
+                }
+            }
+            
+            if let err = error as? LanguageModelSession.GenerationError {
+                switch err {
+                case .exceededContextWindowSize:
+                    
+                    setupPrompter()
+                    let accumulatedMessages = await messageHistory.messages.joined(separator: "\n")
+                    await messageHistory.clear()
+                    return try await requestReply(for: accumulatedMessages)
+                    
+                default:
+                    throw PMSessionError.underlyingError(err)
+                }
+            }
+            
+            throw PMSessionError.underlyingError(error)
+        }
     }
 }

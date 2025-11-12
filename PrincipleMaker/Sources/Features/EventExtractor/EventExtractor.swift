@@ -45,7 +45,7 @@ final class EventExtractor: @unchecked Sendable {
     }
     
     func extractEvent(from: String) async throws -> [PMEvent] {
-        guard let session else { throw PMSessionError.sessionIsNotAvailable }
+        guard let session else { throw PMSessionError.sessionIsNotExist }
         let prompt = createEventExtractionPrompt(from: from)
         let response = try await session.respond(to: prompt, generating: [PMEvent].self)
         return response.content

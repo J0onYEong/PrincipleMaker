@@ -37,9 +37,10 @@ class BasePrompter: @unchecked Sendable {
     }
     
     func request<Response: Generable>(withPrompt prompt: String) async throws -> Response {
-        guard let session else {
-            preconditionFailure("Session is not initialized.")
-        }
+        guard let session else { throw PMSessionError.sessionIsNotExist }
+        
+        guard !session.isResponding else { throw PMSessionError.sessionIsResponding }
+        
         return try await session.respond(to: prompt, generating: Response.self).content
     }
 }
